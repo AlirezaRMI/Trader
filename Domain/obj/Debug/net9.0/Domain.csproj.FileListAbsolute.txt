@@ -1,0 +1,11 @@
+D:\Trader\Trader\Domain\bin\Debug\net9.0\Domain.deps.json
+D:\Trader\Trader\Domain\bin\Debug\net9.0\Domain.dll
+D:\Trader\Trader\Domain\bin\Debug\net9.0\Domain.pdb
+D:\Trader\Trader\Domain\obj\Debug\net9.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Trader\Trader\Domain\obj\Debug\net9.0\Domain.AssemblyInfoInputs.cache
+D:\Trader\Trader\Domain\obj\Debug\net9.0\Domain.AssemblyInfo.cs
+D:\Trader\Trader\Domain\obj\Debug\net9.0\Domain.csproj.CoreCompileInputs.cache
+D:\Trader\Trader\Domain\obj\Debug\net9.0\Domain.dll
+D:\Trader\Trader\Domain\obj\Debug\net9.0\refint\Domain.dll
+D:\Trader\Trader\Domain\obj\Debug\net9.0\Domain.pdb
+D:\Trader\Trader\Domain\obj\Debug\net9.0\ref\Domain.dll

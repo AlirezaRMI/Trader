@@ -1,0 +1,16 @@
+﻿POST http://localhost:5005/evaluate
+Content-Type: application/json
+
+{
+    "Symbol": "EURUSD",
+    "Timeframe": "M5",
+    "Open": 1.1000,
+    "High": 1.1010,
+    "Low": 1.0990,
+    "Close": 1.1005,
+    "Atr": 0.0012,
+    "Bid": 1.1004,
+    "Ask": 1.1006,
+    "Equity": 10000,
+    "OpenTrades": 0
+}

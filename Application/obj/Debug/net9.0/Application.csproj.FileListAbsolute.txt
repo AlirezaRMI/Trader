@@ -1,0 +1,15 @@
+D:\Trader\Trader\Application\bin\Debug\net9.0\Application.deps.json
+D:\Trader\Trader\Application\bin\Debug\net9.0\Application.dll
+D:\Trader\Trader\Application\bin\Debug\net9.0\Application.pdb
+D:\Trader\Trader\Application\bin\Debug\net9.0\Domain.dll
+D:\Trader\Trader\Application\bin\Debug\net9.0\Domain.pdb
+D:\Trader\Trader\Application\obj\Debug\net9.0\Application.csproj.AssemblyReference.cache
+D:\Trader\Trader\Application\obj\Debug\net9.0\Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\Trader\Trader\Application\obj\Debug\net9.0\Application.AssemblyInfoInputs.cache
+D:\Trader\Trader\Application\obj\Debug\net9.0\Application.AssemblyInfo.cs
+D:\Trader\Trader\Application\obj\Debug\net9.0\Application.csproj.CoreCompileInputs.cache
+D:\Trader\Trader\Application\obj\Debug\net9.0\Applicat.44B5EDA2.Up2Date
+D:\Trader\Trader\Application\obj\Debug\net9.0\Application.dll
+D:\Trader\Trader\Application\obj\Debug\net9.0\refint\Application.dll
+D:\Trader\Trader\Application\obj\Debug\net9.0\Application.pdb
+D:\Trader\Trader\Application\obj\Debug\net9.0\ref\Application.dll
