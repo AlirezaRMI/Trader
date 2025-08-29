@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Infrastructure;
+namespace Infrastructure.Extention;
 
 public static class OpsLoggerExtensions
 {

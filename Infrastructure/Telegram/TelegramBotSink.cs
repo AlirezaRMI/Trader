@@ -4,7 +4,7 @@ using Serilog.Sinks.PeriodicBatching;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace Infrastructure.Extention;
+namespace Infrastructure.Telegram;
 
 [Obsolete("Obsolete")]
 public sealed class TelegramBotSink(

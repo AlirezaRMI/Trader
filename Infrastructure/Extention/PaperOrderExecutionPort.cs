@@ -1,7 +1,7 @@
 ﻿using Domain;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure;
+namespace Infrastructure.Extention;
 
 public sealed class PaperOrderExecutionPort(ILogger<PaperOrderExecutionPort> logger) : IOrderExecutionPort
 {

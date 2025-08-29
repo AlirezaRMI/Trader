@@ -2,7 +2,7 @@
 using Domain.Trading;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure;
+namespace Infrastructure.Memory;
 public sealed class InMemorySeriesStore(ILogger<InMemorySeriesStore> logger) : ISeriesStore
 {
     private readonly Dictionary<(string,string), Queue<double>> _map = new();

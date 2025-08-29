@@ -7,13 +7,13 @@ using Infrastructure.Maine;
 
 namespace Api.Controllers;
 
-[ApiController]
-[Route("api/ct")]
+[Tags("CTread Endpoint")]
+[Route("api/demo")]
 public sealed class CTraderController(
     IOptions<CTraderOpenApiOptions> opt,
     CTraderOpenApiSession session,
     ILogger<CTraderController> log)
-    : ControllerBase
+    : ApiBaseController
 {
     private readonly CTraderOpenApiOptions _opt = opt.Value;
 
@@ -167,13 +167,13 @@ public sealed class CTraderController(
     {
         return Ok(new
         {
-            Mode = _opt.Mode,
+            _opt.Mode,
             ClientId = string.IsNullOrWhiteSpace(_opt.ClientId) ? "(empty)" : $"len={_opt.ClientId.Trim().Length}",
             ClientSecret = string.IsNullOrWhiteSpace(_opt.ClientSecret)
                 ? "(empty)"
                 : $"len={_opt.ClientSecret.Trim().Length}",
-            RedirectUri = _opt.RedirectUri,
-            AccountId = _opt.AccountId
+            _opt.RedirectUri,
+            _opt.AccountId
         });
     }
 

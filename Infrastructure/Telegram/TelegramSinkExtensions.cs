@@ -1,12 +1,10 @@
-﻿// Trader/Infrastructure/Logging/TelegramBotSinkExtensions.cs
-
-using System.Net;
+﻿using System.Net;
 using Serilog;
 using Serilog.Configuration;
 using Serilog.Events;
 using Telegram.Bot;
 
-namespace Infrastructure.Extention;
+namespace Infrastructure.Telegram;
 
 public static class TelegramBotSinkExtensions
 {

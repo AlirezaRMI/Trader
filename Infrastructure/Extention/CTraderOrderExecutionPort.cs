@@ -1,13 +1,11 @@
-﻿
-using System.Reactive.Linq;
+﻿using System.Reactive.Linq;
 using Domain;
 using Domain.Enum;
 using Infrastructure.Maine;
 using Microsoft.Extensions.Logging;
 using OpenAPI.Net;
 
-
-namespace Infrastructure;
+namespace Infrastructure.Extention;
 
 public sealed class CTraderOrderExecutionPort(CTraderOpenApiSession session, ILogger<CTraderOrderExecutionPort> log)
     : IOrderExecutionPort
