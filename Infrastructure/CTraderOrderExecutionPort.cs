@@ -1,94 +1,110 @@
-﻿using System.Reactive.Linq;
+﻿
+using System.Reactive.Linq;
 using Domain;
-using Microsoft.Extensions.Configuration;
-using OpenAPI.Net;
-using OpenAPI.Net.Helpers;
 using Domain.Enum;
+using Infrastructure.Maine;
+using Microsoft.Extensions.Logging;
+using OpenAPI.Net;
+
 
 namespace Infrastructure;
 
-public sealed class CTraderOrderExecutionPort : IOrderExecutionPort, IDisposable
+public sealed class CTraderOrderExecutionPort(CTraderOpenApiSession session, ILogger<CTraderOrderExecutionPort> log)
+    : IOrderExecutionPort
 {
-    private readonly OpenClient _client;
-    private readonly long _accountId;
-    private readonly string _clientId, _clientSecret, _accessToken;
-
-    public CTraderOrderExecutionPort(IConfiguration cfg)
-    {
-        var sec     = cfg.GetSection("CTrader");
-        var modeStr = sec["Mode"] ?? "Demo";
-        var mode    = modeStr.Equals("Live", StringComparison.OrdinalIgnoreCase) ? Mode.Live : Mode.Demo;
-        var host    = ApiInfo.GetHost(mode); // "live"/"demo"
-
-        _clientId     = sec["ClientId"]     ?? throw new ArgumentNullException("CTrader:ClientId");
-        _clientSecret = sec["ClientSecret"] ?? throw new ArgumentNullException("CTrader:ClientSecret");
-        _accessToken  = sec["AccessToken"]  ?? throw new ArgumentNullException("CTrader:AccessToken");
-        _accountId    = long.Parse(sec["AccountId"] ?? "0");
-
-        _client = new OpenClient(host, ApiInfo.Port, TimeSpan.FromSeconds(10));
-        _client.Connect().GetAwaiter().GetResult();
-
-        _client.SendMessage(new ProtoOAApplicationAuthReq {
-            ClientId = _clientId, ClientSecret = _clientSecret
-        }, ProtoOAPayloadType.ProtoOaApplicationAuthReq).GetAwaiter().GetResult();
-
-        _client.SendMessage(new ProtoOAAccountAuthReq {
-            CtidTraderAccountId = _accountId, AccessToken = _accessToken
-        }, ProtoOAPayloadType.ProtoOaAccountAuthReq).GetAwaiter().GetResult();
-    }
+    private OpenClient Client => session.Client;  
+    private long AccountId     => session.AccountId;
 
     public async Task<TradeExecutionResult> OpenMarketAsync(TradeRequest req, CancellationToken ct)
     {
-        // 1) گرفتن symbolId
-        var symbolsResTcs = new TaskCompletionSource<ProtoOASymbolsListRes>();
-        using var symSub = _client.OfType<ProtoOASymbolsListRes>()
-            .Where(r => r.CtidTraderAccountId == _accountId)
-            .Subscribe(r => symbolsResTcs.TrySetResult(r));
+        
+        var symbolsTcs = new TaskCompletionSource<ProtoOASymbolsListRes>();
+        using var symSub = Client.OfType<ProtoOASymbolsListRes>()
+            .Where(r => r.CtidTraderAccountId == AccountId)
+            .Subscribe(r => symbolsTcs.TrySetResult(r));
 
-        await _client.SendMessage(new ProtoOASymbolsListReq {
-            CtidTraderAccountId = _accountId
+        await Client.SendMessage(new ProtoOASymbolsListReq
+        {
+            CtidTraderAccountId = AccountId
         }, ProtoOAPayloadType.ProtoOaSymbolsListReq);
 
-        var symbolsRes = await symbolsResTcs.Task;
-        var symbol = symbolsRes.Symbol.FirstOrDefault(s => s.SymbolName == req.Symbol.Value)
-                     ?? throw new InvalidOperationException($"Symbol '{req.Symbol.Value}' not found.");
-        var symbolId = (long)symbol.SymbolId;
+        var symbolsRes = await symbolsTcs.Task;
+        var light = symbolsRes.Symbol.First(s => s.SymbolName == req.Symbol.Value);
+        var symbolId = (long)light.SymbolId;
+        
+        var byIdTcs = new TaskCompletionSource<ProtoOASymbolByIdRes>();
+        using var byIdSub = Client.OfType<ProtoOASymbolByIdRes>()
+            .Where(r => r.CtidTraderAccountId == AccountId)
+            .Subscribe(r => byIdTcs.TrySetResult(r));
 
-        // 2) ارسال سفارش مارکت و انتظارِ Filled
+        await Client.SendMessage(new ProtoOASymbolByIdReq
+        {
+            CtidTraderAccountId = AccountId,
+            SymbolId = { symbolId }
+        }, ProtoOAPayloadType.ProtoOaSymbolByIdReq);
+
+        var byId   = await byIdTcs.Task;
+        var symbol = byId.Symbol.First(s => (long)s.SymbolId == symbolId);
+
+        
+        long step = symbol.StepVolume;   
+        long min  = symbol.MinVolume;    
+        long lot  = symbol.LotSize;      
+
+        long proposed = (long)Math.Round(req.Lots * lot);
+        long volume   = Math.Max(min, (proposed / step) * step); 
+        
         var filledTcs = new TaskCompletionSource<(long orderId, long positionId)>();
-        using var exeSub = _client.OfType<ProtoOAExecutionEvent>()
-            .Where(e => e.CtidTraderAccountId == _accountId)
+        using var exeSub = Client.OfType<ProtoOAExecutionEvent>()
+            .Where(e => e.CtidTraderAccountId == AccountId)
             .Subscribe(e =>
             {
-                if (e.ExecutionType == ProtoOAExecutionType.OrderFilled && e.Position != null && e.Order != null)
+                if (e.ExecutionType == ProtoOAExecutionType.OrderFilled &&
+                    e.Position is not null && e.Order is not null)
+                {
                     filledTcs.TrySetResult(((long)e.Order.OrderId, (long)e.Position.PositionId));
-                if (e.ExecutionType == ProtoOAExecutionType.OrderRejected && !string.IsNullOrEmpty(e.ErrorCode))
+                }
+                if (e.ExecutionType == ProtoOAExecutionType.OrderRejected &&
+                    !string.IsNullOrEmpty(e.ErrorCode))
+                {
                     filledTcs.TrySetException(new Exception(e.ErrorCode));
+                }
             });
 
-        await _client.SendMessage(new ProtoOANewOrderReq {
-            CtidTraderAccountId = _accountId,
-            SymbolId = symbolId,
-            OrderType = ProtoOAOrderType.Market,
-            TradeSide = req.Side == ActionKind.Buy ? ProtoOATradeSide.Buy : ProtoOATradeSide.Sell,
-            Volume = (long)Math.Round(req.Lots * 100_000) 
+        await Client.SendMessage(new ProtoOANewOrderReq
+        {
+            CtidTraderAccountId = AccountId,
+            SymbolId      = symbolId,
+            OrderType     = ProtoOAOrderType.Market,
+            TradeSide     = req.Side == ActionKind.Buy ? ProtoOATradeSide.Buy : ProtoOATradeSide.Sell,
+            Volume        = volume,
+            Comment       = req.Comment,
+            ClientOrderId = $"cli-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}"
         }, ProtoOAPayloadType.ProtoOaNewOrderReq);
 
         var (orderId, positionId) = await filledTcs.Task;
 
-        
-        await _client.SendMessage(new ProtoOAAmendPositionSLTPReq {
-            CtidTraderAccountId = _accountId,
-            PositionId = positionId,
-            StopLoss   = req.Sl,
-            TakeProfit = req.Tp
-        }, ProtoOAPayloadType.ProtoOaAmendPositionSltpReq);
+        int digits = (int)symbol.Digits;
+        double? sl = req.Sl > 0 ? Math.Round(req.Sl, digits) : null;
+        double? tp = req.Tp > 0 ? Math.Round(req.Tp, digits) : null;
+
+        if (sl.HasValue || tp.HasValue)
+        {
+            await Client.SendMessage(new ProtoOAAmendPositionSLTPReq
+            {
+                CtidTraderAccountId = AccountId,
+                PositionId = positionId,
+                StopLoss   = sl ?? 0,
+                TakeProfit = tp ?? 0
+            }, ProtoOAPayloadType.ProtoOaAmendPositionSltpReq);
+        }
+
+        log.LogInformation("OpenAPI: Filled {Side} {Lots} {Symbol} @Order#{OrderId} Pos#{PosId}",
+            req.Side, req.Lots, req.Symbol.Value, orderId, positionId);
 
         return new TradeExecutionResult(true, new OrderId(orderId), "Executed via cTrader");
     }
 
-    public Task<TradeExecutionResult> CloseByTpOrSlAsync(OrderId id, CancellationToken ct) =>
-        Task.FromResult(new TradeExecutionResult(true, id, "Server closes at SL/TP"));
-
-    public void Dispose() => _client?.Dispose();
+    public Task<TradeExecutionResult> CloseByTpOrSlAsync(OrderId id, CancellationToken ct)
+        => Task.FromResult(new TradeExecutionResult(true, id, "Server will close at SL/TP"));
 }

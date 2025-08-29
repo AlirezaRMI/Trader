@@ -1,8 +1,9 @@
 ﻿using Domain.Services;
 using Domain.Trading;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure;
-public sealed class InMemorySeriesStore : ISeriesStore
+public sealed class InMemorySeriesStore(ILogger<InMemorySeriesStore> logger) : ISeriesStore
 {
     private readonly Dictionary<(string,string), Queue<double>> _map = new();
 
@@ -12,6 +13,7 @@ public sealed class InMemorySeriesStore : ISeriesStore
         if (!_map.TryGetValue(key, out var q)) { q = new Queue<double>(); _map[key] = q; }
         if (q.Count >= 500) q.Dequeue();
         q.Enqueue(close);
+        logger.LogDebug("Append {Symbol}/{TF} Close={Close}", s.Value, tf.Value, close);
     }
 
     public IReadOnlyList<double> GetCloses(Symbol s, Timeframe tf, int lastN)
