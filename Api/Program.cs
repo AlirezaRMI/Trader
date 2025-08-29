@@ -1,56 +1,78 @@
-using Application;
-using Application.Command;
-using Application.Handler; // EvaluateCommand, DecisionDto
-using Application.Validation;         // EvaluateValidator, EvaluateHandler
-using Domain; // EvalExecCommand, EvalExecResult, EvalExecHandler, EvalExecValidator
+using System.Threading.RateLimiting;
+using Api;
+using Application.Handler;
+using Application.Validation;
+using Domain;
 using Domain.Polisy;
 using Domain.Services;
-using Domain.Trading;                 // IOrderExecutionPort (برای PaperPort)
 using FluentValidation;
 using Infrastructure;
-using MediatR;
+using Scalar.AspNetCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.ApiServiceProvider(builder.Configuration, builder.Environment);
+builder.Services.AddOpenApiDocument(options =>
+{
+    options.Title = "EasyHub API";
+    options.Version = "v1";
+    options.Description = "Simple and Secure API for EasyHub";
+
+    options.AddSecurity("JWT", new NSwag.OpenApiSecurityScheme
+    {
+        Type = NSwag.OpenApiSecuritySchemeType.ApiKey,
+        Name = "Authorization",
+        In = NSwag.OpenApiSecurityApiKeyLocation.Header,
+        Description = "Enter JWT token like: Bearer {your token}"
+    });
+
+    options.OperationProcessors.Add(
+        new NSwag.Generation.Processors.Security.AspNetCoreOperationSecurityScopeProcessor("JWT"));
+});
 // Validators
 builder.Services.AddValidatorsFromAssemblyContaining<EvaluateValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<EvalExecValidator>();
 
-// MediatR (هر دو هندلر)
+// MediatR
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(EvaluateHandler).Assembly);
     cfg.RegisterServicesFromAssembly(typeof(EvalExecHandler).Assembly);
 });
 
-// Domain services
 builder.Services.AddSingleton<IClock, SystemClock>();
 builder.Services.AddSingleton<DailyTradePolicy>();
 builder.Services.AddSingleton<StrategyEngine>();
 
-// Infra
+
 builder.Services.AddSingleton<ISeriesStore, InMemorySeriesStore>();
-builder.Services.AddSingleton<IOrderExecutionPort, PaperOrderExecutionPort>(); 
+builder.Services.AddSingleton<IOrderExecutionPort, PaperOrderExecutionPort>();
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(ctx =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: ctx.Connection.RemoteIpAddress?.ToString() ?? "anon",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 120,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
+});
 
 var app = builder.Build();
+app.UseStaticFiles();
+app.UseRateLimiter();
+app.MapControllers();
 
-app.MapPost("/evaluate", async (EvaluateCommand cmd, IValidator<EvaluateCommand> v, IMediator mediator) =>
-{
-    var res = await v.ValidateAsync(cmd);
-    if (!res.IsValid) return Results.ValidationProblem(res.ToDictionary());
-
-    DecisionDto decision = await mediator.Send(cmd);
-    var csv = $"{decision.Action},{decision.Size},{decision.Sl},{decision.Tp},{decision.Note.Replace(',', ' ')}";
-    return Results.Text(csv, "text/plain");
-});
-
-app.MapPost("/eval-exec", async (EvalExecCommand cmd, IValidator<EvalExecCommand> v, IMediator mediator) =>
-{
-    var res = await v.ValidateAsync(cmd);
-    if (!res.IsValid) return Results.ValidationProblem(res.ToDictionary());
-
-    object? result = await mediator.Send(cmd);
-    return Results.Json(result);
-});
+// OpenAPI JSON + Scalar UI
+app.MapOpenApi();
+app.MapScalarApiReference();
 
 app.Run();

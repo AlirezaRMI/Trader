@@ -2,12 +2,12 @@
 Content-Type: application/json
 
 {
-    "Symbol": "EURUSD",
+    "Symbol": "EPICURUS",
     "Timeframe": "M5",
-    "Open": 1.1000,
+    "Open": 1.1007,
     "High": 1.1010,
     "Low": 1.0990,
-    "Close": 1.1005,
+    "Close": 1.1015,
     "Atr": 0.0012,
     "Bid": 1.1004,
     "Ask": 1.1006,

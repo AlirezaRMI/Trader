@@ -16,14 +16,20 @@ public sealed class StrategyEngine
         var closes = series.GetCloses(symbol, tf, 50);
         if (closes.Count < 20) return new Decision(ActionKind.Hold, new Lots(0), Note: "warmup");
 
-        double sma(int n) => closes.TakeLast(n).Average();
-        var fast = sma(10);
-        var slow = sma(20);
+        double Sma(int n) => closes.TakeLast(n).Average();
+        var sma10 = Sma(10);
+        var sma20 = Sma(20);
 
-        var action = fast > slow ? ActionKind.Buy : fast < slow ? ActionKind.Sell : ActionKind.Hold;
-        if (action == ActionKind.Hold) return new Decision(ActionKind.Hold, new Lots(0.0), Note: "no edge");
+        var action = sma10 > sma20 ? ActionKind.Buy :
+            sma10 < sma20 ? ActionKind.Sell : ActionKind.Hold;
 
-        var size = new Lots(0.10);
+        if (action == ActionKind.Hold) return new Decision(ActionKind.Hold, new Lots(0), Note: "flat");
+
+        var riskPerTrade = 0.01; // 1% مثال
+        var price = (action == ActionKind.Buy) ? ask : bid;
+        var stop  = atr.Value * 1.5;
+        var size  = Math.Max(0.01, Math.Round(riskPerTrade / (stop + 1e-6), 2)); // lots ساده
+
         double sl, tp;
         if (action == ActionKind.Buy)
         {
@@ -35,8 +41,6 @@ public sealed class StrategyEngine
             sl = ask + 1.5 * atr.Value;
             tp = ask - 2.0 * atr.Value;
         }
-
-        gate.RegisterTrade();
-        return new Decision(action, size, sl, tp, "SMAxATR");
+        return new Decision(action, new Lots(size), sl, tp, "SMAxATR");
     }
 }

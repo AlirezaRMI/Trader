@@ -25,4 +25,5 @@ public class DailyTradePolicy
     }
     public void RegisterTrade() => _count++;
     public int Count => _count;
+    public void Reset() { _day = Today(); _count = 0; }
 }

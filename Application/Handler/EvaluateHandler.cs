@@ -7,9 +7,9 @@ using MediatR;
 namespace Application.Handler;
 
 public sealed class EvaluateHandler(StrategyEngine engine, DailyTradePolicy gate, ISeriesStore series)
-    : IRequestHandler<EvalExecCommand, DecisionDto>
+    : IRequestHandler<EvaluateCommand , DecisionDto>
 {
-    public Task<DecisionDto> Handle(EvalExecCommand r, CancellationToken ct)
+    public Task<DecisionDto> Handle(EvaluateCommand  r, CancellationToken ct)
     {
         var dec = engine.Evaluate(new Symbol(r.Symbol), new Timeframe(r.Timeframe),
             r.Bid, r.Ask, new Atr(r.Atr), r.Close, gate, series);
