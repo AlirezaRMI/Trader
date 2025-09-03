@@ -1,46 +1,49 @@
-﻿using Domain.Enum;
-using Domain.Polisy;
-using Domain.Trading;
+﻿namespace Domain.Services;
+using Domain.Enum;
 
-namespace Domain.Services;
-
-public sealed class StrategyEngine
+public class StrategyEngine
 {
-    public Decision Evaluate(Symbol symbol, Timeframe tf, double bid, double ask, Atr atr, double close,
-        DailyTradePolicy gate, ISeriesReader series)
+    private const double RiskPerTradeUSD = 1.0;
+    private const double RewardRatio = 5.0;
+    private const double RiskPercentage = 0.01;
+
+    public TradeDecision Evaluate(AccountInfo account, SymbolInfo symbol, MarketData market)
     {
-        if (!gate.CanTrade()) return new Decision(ActionKind.Hold, new Lots(0), Note: "daily cap");
-        if (atr.Value <= 0 || ask - bid <= 0) return new Decision(ActionKind.Hold, new Lots(0), Note: "bad market");
+        var signal = GetTradingSignal(market);
+        if (signal == ActionKind.Hold) return new TradeDecision();
 
-        series.AppendClose(symbol, tf, close);
-        var closes = series.GetCloses(symbol, tf, 50);
-        if (closes.Count < 20) return new Decision(ActionKind.Hold, new Lots(0), Note: "warmup");
+        double stopLossDistance = market.Atr * 1.5;
+        double stopLossPrice = (signal == ActionKind.Buy) ? market.Ask - stopLossDistance : market.Bid + stopLossDistance;
 
-        double Sma(int n) => closes.TakeLast(n).Average();
-        var sma10 = Sma(10);
-        var sma20 = Sma(20);
+        double equityRisk = account.Equity * RiskPercentage;
+        double riskAmount = Math.Min(equityRisk, RiskPerTradeUSD);
 
-        var action = sma10 > sma20 ? ActionKind.Buy :
-            sma10 < sma20 ? ActionKind.Sell : ActionKind.Hold;
+        double pipValuePerLot = 10.0; // این مقدار باید دقیق‌تر محاسبه یا از API خوانده شود
+        double stopLossPips = stopLossDistance / symbol.PipSize;
+        if (stopLossPips == 0) return new TradeDecision { Note = "Invalid StopLoss distance (zero pips)." };
 
-        if (action == ActionKind.Hold) return new Decision(ActionKind.Hold, new Lots(0), Note: "flat");
+        double positionSizeLots = riskAmount / (stopLossPips * pipValuePerLot);
+        positionSizeLots = Math.Round(positionSizeLots / symbol.StepVolume) * symbol.StepVolume;
+        if (positionSizeLots < symbol.StepVolume) return new TradeDecision { Note = "Calculated position size is too small." };
 
-        var riskPerTrade = 0.01; // 1% مثال
-        var price = (action == ActionKind.Buy) ? ask : bid;
-        var stop  = atr.Value * 1.5;
-        var size  = Math.Max(0.01, Math.Round(riskPerTrade / (stop + 1e-6), 2)); // lots ساده
+        double takeProfitDistance = stopLossDistance * RewardRatio;
+        double takeProfitPrice = (signal == ActionKind.Buy) ? market.Ask + takeProfitDistance : market.Bid - takeProfitDistance;
 
-        double sl, tp;
-        if (action == ActionKind.Buy)
+        return new TradeDecision
         {
-            sl = bid - 1.5 * atr.Value;
-            tp = bid + 2.0 * atr.Value;
-        }
-        else
-        {
-            sl = ask + 1.5 * atr.Value;
-            tp = ask - 2.0 * atr.Value;
-        }
-        return new Decision(action, new Lots(size), sl, tp, "SMAxATR");
+            Action = signal,
+            EntryPrice = (signal == ActionKind.Buy) ? market.Ask : market.Bid,
+            StopLossPrice = stopLossPrice,
+            TakeProfitPrice = takeProfitPrice,
+            PositionSizeLots = positionSizeLots,
+            Note = "Signal confirmed, risk calculated."
+        };
+    }
+
+    private ActionKind GetTradingSignal(MarketData market)
+    {
+        if (market.Close > market.Open) return ActionKind.Buy;
+        if (market.Close < market.Open) return ActionKind.Sell;
+        return ActionKind.Hold;
     }
 }

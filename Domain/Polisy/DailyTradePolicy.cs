@@ -1,29 +1,24 @@
-﻿using Domain.Services;
-
+﻿// In Domain.Policy
 namespace Domain.Polisy;
 
 public class DailyTradePolicy
 {
-    private readonly IClock _clock;
-    private readonly TimeZoneInfo _tz = TimeZoneInfo.FindSystemTimeZoneById("Asia/Dubai");
-    private DateOnly _day; private int _count;
+    private static readonly List<DateTime> _tradesToday = new();
+    private const int MaxTradesPerDay = 5;
 
-    public DailyTradePolicy(IClock clock)
+    public bool CanExecuteTrade()
     {
-        _clock = clock;
-        _day = Today();
-        _count = 0;
-    }
-    private DateOnly Today() =>
-        DateOnly.FromDateTime(TimeZoneInfo.ConvertTimeFromUtc(_clock.UtcNow, _tz));
+        _tradesToday.RemoveAll(tradeTime => tradeTime.Date < DateTime.UtcNow.Date);
 
-    public bool CanTrade()
-    {
-        var t = Today();
-        if (t != _day) { _day = t; _count = 0; }
-        return _count < 5;
+        if (_tradesToday.Count >= MaxTradesPerDay)
+        {
+            return false; 
+        }
+        return true;
     }
-    public void RegisterTrade() => _count++;
-    public int Count => _count;
-    public void Reset() { _day = Today(); _count = 0; }
+
+    public void RegisterTrade()
+    {
+        _tradesToday.Add(DateTime.UtcNow);
+    }
 }

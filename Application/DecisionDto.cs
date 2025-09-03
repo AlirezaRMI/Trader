@@ -1,3 +1,10 @@
 ﻿namespace Application;
 
-public sealed record DecisionDto(string Action, double Size, double Sl, double Tp, string Note);
+
+public record DecisionDto(
+    string Action,
+    double PositionSizeLots,
+    double StopLossPrice,
+    double TakeProfitPrice,
+    string Note
+);

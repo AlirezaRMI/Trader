@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure.Behaviors;
+namespace Application.Behaviors;
 
 public sealed class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TRequest, TResponse>> log)
     : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull

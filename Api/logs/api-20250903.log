@@ -1,0 +1,879 @@
+2025-09-03 14:03:32.886 +03:30 [WRN] The WebRootPath was not found: D:\Trader\Trader\Api\wwwroot. Static files may be unavailable.
+2025-09-03 14:03:34.045 +03:30 [INF] Starting Hangfire Server using job storage: 'Hangfire.MemoryStorage.MemoryStorage'
+2025-09-03 14:03:34.156 +03:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-09-03 14:03:34.396 +03:30 [INF] Server desktop-oc3thlo:9484:64d1d212 successfully announced in 41.7101 ms
+2025-09-03 14:03:34.460 +03:30 [INF] Server desktop-oc3thlo:9484:64d1d212 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-09-03 14:03:35.007 +03:30 [INF] Server desktop-oc3thlo:9484:64d1d212 all the dispatchers started
+2025-09-03 14:03:39.335 +03:30 [INF] HTTP GET /hangfire responded 200 in 422.2 ms
+2025-09-03 14:03:39.458 +03:30 [INF] HTTP GET /hangfire/css-dark182101588180698 responded 200 in 15.4 ms
+2025-09-03 14:03:39.471 +03:30 [INF] HTTP GET /hangfire/css182101263568032 responded 200 in 32.9 ms
+2025-09-03 14:03:39.540 +03:30 [INF] HTTP GET /hangfire/js18210649626801 responded 200 in 101.7 ms
+2025-09-03 14:03:39.736 +03:30 [INF] HTTP GET /hangfire/fonts/glyphicons-halflings-regular/woff2 responded 200 in 1.5 ms
+2025-09-03 14:03:41.435 +03:30 [INF] HTTP GET /openapi/docs.json responded 200 in 2809.2 ms
+2025-09-03 14:03:42.205 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 123.7 ms
+2025-09-03 14:03:43.505 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 215.0 ms
+2025-09-03 14:03:45.887 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 3.0 ms
+2025-09-03 14:03:47.741 +03:30 [INF] HTTP POST /hangfire/recurring/trigger responded 204 in 120.2 ms
+2025-09-03 14:03:47.799 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 21.1 ms
+2025-09-03 14:03:47.896 +03:30 [WRN] You do not have a valid license key for the Lucky Penny software MediatR. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2025-09-03 14:03:49.175 +03:30 [INF] Successfully connected to cTrader.
+2025-09-03 14:03:49.231 +03:30 [INF] cTrader session is fully connected and authorized.
+2025-09-03 14:03:49.276 +03:30 [INF] Hangfire job started at: "2025-09-03T14:03:49.2751832+03:30"
+2025-09-03 14:03:49.293 +03:30 [INF] Requesting trader info for AccountId 2251228...
+2025-09-03 14:03:50.874 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:03:53.107 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:03:55.181 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:03:57.210 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.2 ms
+2025-09-03 14:04:00.946 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:04:02.976 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:04:04.680 +03:30 [ERR] Failed to retrieve account information for AccountId 2251228.
+System.TimeoutException: Timeout waiting for response of type ProtoOATraderRes
+   at Infrastructure.Services.CTraderInfoService.GetAccountInfoAsync() in D:\Trader\Trader\Infrastructure\Services\CTraderInfoService.cs:line 40
+2025-09-03 14:04:04.739 +03:30 [ERR] Could not fetch market data or account info for job execution.
+2025-09-03 14:04:05.340 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 10.7 ms
+2025-09-03 14:04:07.472 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:04:09.492 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:04:11.624 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:04:13.727 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.1 ms
+2025-09-03 14:04:15.781 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:04:17.879 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:04:19.918 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.9 ms
+2025-09-03 14:04:20.818 +03:30 [INF] HTTP GET /hangfire/servers responded 200 in 34.1 ms
+2025-09-03 14:04:22.731 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 3.1 ms
+2025-09-03 14:04:24.954 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.4 ms
+2025-09-03 14:04:26.985 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.6 ms
+2025-09-03 14:04:29.007 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:04:30.882 +03:30 [INF] HTTP POST /hangfire/recurring/trigger responded 204 in 4.4 ms
+2025-09-03 14:04:30.883 +03:30 [INF] Hangfire job started at: "2025-09-03T14:04:30.8830927+03:30"
+2025-09-03 14:04:30.914 +03:30 [INF] Requesting trader info for AccountId 2251228...
+2025-09-03 14:04:30.918 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 2.7 ms
+2025-09-03 14:04:33.080 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:04:35.101 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:04:37.145 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.8 ms
+2025-09-03 14:04:46.108 +03:30 [ERR] Failed to retrieve account information for AccountId 2251228.
+System.TimeoutException: Timeout waiting for response of type ProtoOATraderRes
+   at Infrastructure.Services.CTraderInfoService.GetAccountInfoAsync() in D:\Trader\Trader\Infrastructure\Services\CTraderInfoService.cs:line 40
+2025-09-03 14:04:46.568 +03:30 [ERR] Could not fetch market data or account info for job execution.
+2025-09-03 14:11:35.512 +03:30 [WRN] The WebRootPath was not found: D:\Trader\Trader\Api\wwwroot. Static files may be unavailable.
+2025-09-03 14:11:36.006 +03:30 [INF] Starting Hangfire Server using job storage: 'Hangfire.MemoryStorage.MemoryStorage'
+2025-09-03 14:11:36.010 +03:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-09-03 14:11:36.155 +03:30 [INF] Server desktop-oc3thlo:4088:941f8284 successfully announced in 24.5819 ms
+2025-09-03 14:11:36.245 +03:30 [INF] Server desktop-oc3thlo:4088:941f8284 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-09-03 14:11:36.463 +03:30 [INF] Server desktop-oc3thlo:4088:941f8284 all the dispatchers started
+2025-09-03 14:13:56.223 +03:30 [INF] HTTP GET /hangfire responded 200 in 213.7 ms
+2025-09-03 14:13:56.352 +03:30 [INF] HTTP GET /hangfire/css-dark18210477960495 responded 200 in 18.9 ms
+2025-09-03 14:13:56.365 +03:30 [INF] HTTP GET /hangfire/css182101922671876 responded 200 in 24.9 ms
+2025-09-03 14:13:56.424 +03:30 [INF] HTTP GET /hangfire/js182102142250390 responded 200 in 78.6 ms
+2025-09-03 14:13:58.775 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 141.7 ms
+2025-09-03 14:13:58.794 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 112.4 ms
+2025-09-03 14:14:01.015 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.9 ms
+2025-09-03 14:14:03.032 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:14:04.139 +03:30 [INF] HTTP POST /hangfire/recurring/trigger responded 204 in 126.0 ms
+2025-09-03 14:14:04.189 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 19.5 ms
+2025-09-03 14:14:04.255 +03:30 [WRN] You do not have a valid license key for the Lucky Penny software MediatR. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2025-09-03 14:14:05.390 +03:30 [INF] Successfully connected to cTrader.
+2025-09-03 14:14:05.448 +03:30 [INF] cTrader session is fully connected and authorized.
+2025-09-03 14:14:05.474 +03:30 [INF] Hangfire job started at: "2025-09-03T14:14:05.4729218+03:30"
+2025-09-03 14:14:05.486 +03:30 [INF] Requesting trader info for AccountId 2251228...
+2025-09-03 14:14:07.303 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:14:09.372 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:14:11.457 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:14:13.499 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:14:15.580 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:14:17.599 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 14:14:19.628 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:14:20.770 +03:30 [ERR] Failed to retrieve account information for AccountId 2251228.
+System.TimeoutException: Timeout waiting for response of type ProtoOATraderRes
+   at Infrastructure.Services.CTraderInfoService.GetAccountInfoAsync() in D:\Trader\Trader\Infrastructure\Services\CTraderInfoService.cs:line 41
+2025-09-03 14:14:20.824 +03:30 [ERR] Could not fetch market data or account info for job execution.
+2025-09-03 14:14:21.647 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.0 ms
+2025-09-03 14:14:23.667 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:14:25.769 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:14:27.782 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:14:29.804 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:14:31.822 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 14:14:33.866 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:14:35.969 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:14:38.007 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.8 ms
+2025-09-03 14:14:40.040 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 14:14:42.070 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:14:44.086 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:14:46.106 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:14:48.128 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:14:50.160 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.1 ms
+2025-09-03 14:14:52.188 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:14:54.585 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 14:14:56.684 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:14:58.731 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:15:00.765 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:15:02.806 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:15:04.850 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:15:06.899 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:15:08.917 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:15:10.936 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:15:12.968 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:15:14.986 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.2 ms
+2025-09-03 14:15:17.006 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:15:19.033 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 14:15:21.062 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 14:15:23.082 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:15:25.092 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:15:27.109 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:15:29.126 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:15:31.161 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 14:15:33.188 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:15:35.216 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:15:37.299 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:15:39.320 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:15:41.337 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:15:43.354 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:15:45.385 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:15:47.409 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:15:49.435 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:15:51.494 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 14:15:53.542 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:15:55.575 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.3 ms
+2025-09-03 14:15:57.602 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 14:15:59.639 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 14:16:01.658 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 14:16:03.680 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 14:16:05.702 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:16:07.766 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:16:09.793 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:16:11.809 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:16:13.836 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:16:15.857 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:16:17.885 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.4 ms
+2025-09-03 14:16:19.917 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.3 ms
+2025-09-03 14:16:21.938 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:16:23.972 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 14:16:26.002 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.5 ms
+2025-09-03 14:16:28.030 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:16:30.047 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:16:32.066 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:16:34.134 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:16:36.175 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:16:38.329 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.5 ms
+2025-09-03 14:16:40.397 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:16:42.459 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.7 ms
+2025-09-03 14:16:44.480 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:16:46.497 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:16:48.515 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:16:50.553 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:16:52.629 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:16:54.649 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:16:56.673 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:16:58.695 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:17:00.722 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:17:02.799 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:17:04.832 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.1 ms
+2025-09-03 14:17:06.855 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:17:08.917 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:17:10.953 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:17:12.979 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:17:15.000 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:17:17.026 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:17:19.052 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.1 ms
+2025-09-03 14:17:21.089 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 14:17:23.117 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:17:25.542 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:17:27.918 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 14:17:29.948 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:17:31.964 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:17:33.992 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:17:36.024 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.3 ms
+2025-09-03 14:17:39.073 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.9 ms
+2025-09-03 14:17:41.166 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:17:43.187 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:17:45.203 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:17:47.217 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 14:17:49.249 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.8 ms
+2025-09-03 14:17:51.286 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:17:53.307 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:17:55.335 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.5 ms
+2025-09-03 14:17:57.379 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:17:59.409 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.5 ms
+2025-09-03 14:18:01.517 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:18:03.551 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 14:18:05.565 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:18:07.580 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:18:09.620 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:18:11.715 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:18:13.730 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 14:18:15.753 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:18:17.768 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.1 ms
+2025-09-03 14:18:19.788 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:18:21.818 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:18:23.845 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:18:25.877 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:18:27.976 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:18:29.992 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:18:32.013 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:18:34.045 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:18:36.069 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:18:38.090 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:18:40.152 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:18:42.259 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:18:44.331 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.1 ms
+2025-09-03 14:18:46.394 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:18:48.421 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:18:50.507 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:18:52.588 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:18:54.663 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:18:56.687 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:18:58.716 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.9 ms
+2025-09-03 14:19:00.828 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:19:02.849 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:19:05.651 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 782.2 ms
+2025-09-03 14:19:07.715 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:19:10.116 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:19:12.799 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:19:15.839 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:19:17.859 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:19:19.881 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:19:34.990 +03:30 [WRN] The WebRootPath was not found: D:\Trader\Trader\Api\wwwroot. Static files may be unavailable.
+2025-09-03 14:19:35.320 +03:30 [INF] Starting Hangfire Server using job storage: 'Hangfire.MemoryStorage.MemoryStorage'
+2025-09-03 14:19:35.324 +03:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-09-03 14:19:35.442 +03:30 [INF] Server desktop-oc3thlo:1968:de917bd2 successfully announced in 19.2809 ms
+2025-09-03 14:19:35.454 +03:30 [INF] Server desktop-oc3thlo:1968:de917bd2 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-09-03 14:19:35.637 +03:30 [INF] Server desktop-oc3thlo:1968:de917bd2 all the dispatchers started
+2025-09-03 14:19:43.923 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 230.2 ms
+2025-09-03 14:19:44.079 +03:30 [INF] HTTP GET /hangfire/css-dark1821026173188 responded 200 in 22.6 ms
+2025-09-03 14:19:44.080 +03:30 [INF] HTTP GET /hangfire/css182101538642255 responded 200 in 60.0 ms
+2025-09-03 14:19:44.118 +03:30 [INF] HTTP GET /hangfire/js182101163727256 responded 200 in 99.5 ms
+2025-09-03 14:19:46.034 +03:30 [INF] HTTP POST /hangfire/recurring/trigger responded 204 in 111.1 ms
+2025-09-03 14:19:46.076 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 16.6 ms
+2025-09-03 14:19:46.142 +03:30 [WRN] You do not have a valid license key for the Lucky Penny software MediatR. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2025-09-03 14:19:47.068 +03:30 [INF] Successfully connected to cTrader.
+2025-09-03 14:19:47.123 +03:30 [INF] cTrader session is fully connected and authorized.
+2025-09-03 14:19:47.139 +03:30 [INF] Hangfire job started at: "2025-09-03T14:19:47.1382526+03:30"
+2025-09-03 14:19:47.151 +03:30 [INF] Requesting trader info for AccountId 2251228...
+2025-09-03 14:19:48.581 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 55.9 ms
+2025-09-03 14:19:50.622 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.3 ms
+2025-09-03 14:19:52.657 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.9 ms
+2025-09-03 14:19:54.711 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.4 ms
+2025-09-03 14:19:56.820 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:19:58.850 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:20:00.875 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:20:02.394 +03:30 [ERR] Failed to retrieve account information for AccountId 2251228.
+System.TimeoutException: Timeout waiting for response of type ProtoOATraderRes
+   at Infrastructure.Services.CTraderInfoService.GetAccountInfoAsync() in D:\Trader\Trader\Infrastructure\Services\CTraderInfoService.cs:line 41
+2025-09-03 14:20:02.439 +03:30 [ERR] Could not fetch market data or account info for job execution.
+2025-09-03 14:20:02.907 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.2 ms
+2025-09-03 14:20:04.949 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.5 ms
+2025-09-03 14:20:06.978 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:20:09.007 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:20:11.036 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.9 ms
+2025-09-03 14:20:53.123 +03:30 [WRN] The WebRootPath was not found: D:\Trader\Trader\Api\wwwroot. Static files may be unavailable.
+2025-09-03 14:20:53.473 +03:30 [INF] Starting Hangfire Server using job storage: 'Hangfire.MemoryStorage.MemoryStorage'
+2025-09-03 14:20:53.478 +03:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-09-03 14:20:53.613 +03:30 [INF] Server desktop-oc3thlo:10528:e522cee1 successfully announced in 19.4075 ms
+2025-09-03 14:20:53.622 +03:30 [INF] Server desktop-oc3thlo:10528:e522cee1 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-09-03 14:20:53.741 +03:30 [INF] Server desktop-oc3thlo:10528:e522cee1 all the dispatchers started
+2025-09-03 14:21:07.364 +03:30 [INF] HTTP POST /hangfire/recurring/trigger responded 204 in 189.0 ms
+2025-09-03 14:21:07.433 +03:30 [WRN] You do not have a valid license key for the Lucky Penny software MediatR. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2025-09-03 14:21:07.627 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 205.5 ms
+2025-09-03 14:21:07.779 +03:30 [INF] HTTP GET /hangfire/css-dark18210119015719 responded 200 in 3.5 ms
+2025-09-03 14:21:07.878 +03:30 [INF] HTTP GET /hangfire/js18210809651327 responded 200 in 74.2 ms
+2025-09-03 14:21:07.878 +03:30 [INF] HTTP GET /hangfire/css18210112925614 responded 200 in 161.6 ms
+2025-09-03 14:21:08.366 +03:30 [INF] Successfully connected to cTrader.
+2025-09-03 14:21:08.419 +03:30 [INF] cTrader session is fully connected and authorized.
+2025-09-03 14:21:08.429 +03:30 [INF] Hangfire job started at: "2025-09-03T14:21:08.4285997+03:30"
+2025-09-03 14:21:08.441 +03:30 [INF] Requesting trader info for AccountId 2251228...
+2025-09-03 14:21:10.194 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 51.6 ms
+2025-09-03 14:21:12.214 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.1 ms
+2025-09-03 14:21:14.241 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:21:16.261 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:21:18.303 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 14:21:20.320 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:21:22.459 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 14:21:23.673 +03:30 [ERR] Failed to retrieve account information for AccountId 2251228.
+System.TimeoutException: Timeout waiting for response of type ProtoOATraderRes
+   at Infrastructure.Services.CTraderInfoService.GetAccountInfoAsync() in D:\Trader\Trader\Infrastructure\Services\CTraderInfoService.cs:line 41
+2025-09-03 14:21:23.711 +03:30 [ERR] Could not fetch market data or account info for job execution.
+2025-09-03 14:21:24.490 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 7.7 ms
+2025-09-03 14:21:26.516 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.6 ms
+2025-09-03 14:21:28.542 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.6 ms
+2025-09-03 14:40:36.464 +03:30 [WRN] The WebRootPath was not found: D:\Trader\Trader\Api\wwwroot. Static files may be unavailable.
+2025-09-03 14:40:37.013 +03:30 [INF] Starting Hangfire Server using job storage: 'Hangfire.MemoryStorage.MemoryStorage'
+2025-09-03 14:40:37.017 +03:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-09-03 14:40:37.248 +03:30 [INF] Server desktop-oc3thlo:8632:0d055314 successfully announced in 65.7643 ms
+2025-09-03 14:40:37.547 +03:30 [INF] Server desktop-oc3thlo:8632:0d055314 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-09-03 14:40:37.972 +03:30 [INF] Server desktop-oc3thlo:8632:0d055314 all the dispatchers started
+2025-09-03 14:40:48.913 +03:30 [INF] HTTP GET /hangfire responded 200 in 213.4 ms
+2025-09-03 14:40:49.040 +03:30 [INF] HTTP GET /hangfire/css-dark182101306991615 responded 200 in 14.8 ms
+2025-09-03 14:40:49.166 +03:30 [INF] HTTP GET /hangfire/js182101436362918 responded 200 in 128.2 ms
+2025-09-03 14:40:49.166 +03:30 [INF] HTTP GET /hangfire/css1821088416705 responded 200 in 140.3 ms
+2025-09-03 14:40:51.650 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 138.9 ms
+2025-09-03 14:40:51.711 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 225.8 ms
+2025-09-03 14:40:54.018 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.0 ms
+2025-09-03 14:40:54.734 +03:30 [INF] HTTP POST /hangfire/recurring/trigger responded 204 in 132.3 ms
+2025-09-03 14:40:54.792 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 25.9 ms
+2025-09-03 14:40:54.857 +03:30 [WRN] You do not have a valid license key for the Lucky Penny software MediatR. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2025-09-03 14:40:55.958 +03:30 [INF] Successfully connected to cTrader.
+2025-09-03 14:40:56.032 +03:30 [INF] cTrader session is fully connected and authorized.
+2025-09-03 14:40:56.050 +03:30 [INF] Hangfire job started at: "2025-09-03T14:40:56.0484754+03:30"
+2025-09-03 14:40:56.069 +03:30 [INF] Requesting trader info for AccountId 2251228...
+2025-09-03 14:40:57.308 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:40:59.349 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 14:41:01.399 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:41:03.425 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:41:05.451 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:41:07.474 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:41:09.527 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:41:11.344 +03:30 [ERR] Failed to retrieve account information for AccountId 2251228.
+System.TimeoutException: Timeout waiting for response of type ProtoOATraderRes
+   at Infrastructure.Services.CTraderInfoService.GetAccountInfoAsync() in D:\Trader\Trader\Infrastructure\Services\CTraderInfoService.cs:line 21
+2025-09-03 14:41:11.394 +03:30 [ERR] Could not fetch market data or account info for job execution.
+2025-09-03 14:41:11.561 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.3 ms
+2025-09-03 14:41:13.676 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:41:15.694 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:51:04.347 +03:30 [WRN] The WebRootPath was not found: D:\Trader\Trader\Api\wwwroot. Static files may be unavailable.
+2025-09-03 14:51:04.858 +03:30 [INF] Starting Hangfire Server using job storage: 'Hangfire.MemoryStorage.MemoryStorage'
+2025-09-03 14:51:04.863 +03:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-09-03 14:51:05.040 +03:30 [INF] Server desktop-oc3thlo:3720:c4b2e5ee successfully announced in 28.9994 ms
+2025-09-03 14:51:05.057 +03:30 [INF] Server desktop-oc3thlo:3720:c4b2e5ee is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-09-03 14:51:05.184 +03:30 [INF] Server desktop-oc3thlo:3720:c4b2e5ee all the dispatchers started
+2025-09-03 14:51:10.298 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 299.1 ms
+2025-09-03 14:51:10.444 +03:30 [INF] HTTP GET /hangfire/css-dark182101469259936 responded 200 in 67.8 ms
+2025-09-03 14:51:10.451 +03:30 [INF] HTTP GET /hangfire/css18210816653465 responded 200 in 24.7 ms
+2025-09-03 14:51:10.492 +03:30 [INF] HTTP GET /hangfire/js18210559947558 responded 200 in 114.2 ms
+2025-09-03 14:51:12.343 +03:30 [INF] HTTP POST /hangfire/recurring/trigger responded 204 in 119.5 ms
+2025-09-03 14:51:12.389 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 18.8 ms
+2025-09-03 14:51:12.472 +03:30 [WRN] You do not have a valid license key for the Lucky Penny software MediatR. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2025-09-03 14:51:13.653 +03:30 [INF] Successfully connected to cTrader.
+2025-09-03 14:51:13.721 +03:30 [INF] cTrader session is fully connected and authorized.
+2025-09-03 14:51:13.738 +03:30 [INF] Hangfire job started at: "2025-09-03T14:51:13.7361949+03:30"
+2025-09-03 14:51:13.752 +03:30 [INF] Requesting trader info for AccountId 2251228...
+2025-09-03 14:51:14.715 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 56.6 ms
+2025-09-03 14:51:17.797 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.2 ms
+2025-09-03 14:51:19.836 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.4 ms
+2025-09-03 14:51:21.860 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 14:51:23.879 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:51:25.902 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:51:27.929 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:51:29.057 +03:30 [ERR] Failed to retrieve account information for AccountId 2251228.
+System.TimeoutException: Timeout waiting for response of type ProtoOATraderRes
+   at Infrastructure.Services.CTraderInfoService.GetAccountInfoAsync() in D:\Trader\Trader\Infrastructure\Services\CTraderInfoService.cs:line 21
+2025-09-03 14:51:29.098 +03:30 [ERR] Could not fetch market data or account info for job execution.
+2025-09-03 14:51:29.962 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.7 ms
+2025-09-03 14:51:31.987 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:51:34.002 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.4 ms
+2025-09-03 14:53:56.006 +03:30 [WRN] The WebRootPath was not found: D:\Trader\Trader\Api\wwwroot. Static files may be unavailable.
+2025-09-03 14:53:56.648 +03:30 [INF] Starting Hangfire Server using job storage: 'Hangfire.MemoryStorage.MemoryStorage'
+2025-09-03 14:53:56.658 +03:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-09-03 14:53:56.853 +03:30 [INF] Server desktop-oc3thlo:1704:6d3bca8d successfully announced in 28.5635 ms
+2025-09-03 14:53:56.924 +03:30 [INF] Server desktop-oc3thlo:1704:6d3bca8d is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-09-03 14:53:57.491 +03:30 [INF] Server desktop-oc3thlo:1704:6d3bca8d all the dispatchers started
+2025-09-03 14:53:57.948 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 783.4 ms
+2025-09-03 14:53:58.043 +03:30 [INF] HTTP GET /hangfire/css-dark18210304837568 responded 200 in 16.7 ms
+2025-09-03 14:53:58.138 +03:30 [INF] HTTP GET /hangfire/css18210387870928 responded 200 in 32.1 ms
+2025-09-03 14:53:58.138 +03:30 [INF] HTTP GET /hangfire/js182101949715479 responded 200 in 111.8 ms
+2025-09-03 14:54:00.494 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 114.0 ms
+2025-09-03 14:54:01.511 +03:30 [INF] HTTP POST /hangfire/recurring/trigger responded 204 in 87.9 ms
+2025-09-03 14:54:01.562 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 20.3 ms
+2025-09-03 14:54:01.647 +03:30 [WRN] You do not have a valid license key for the Lucky Penny software MediatR. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2025-09-03 14:54:02.515 +03:30 [INF] Successfully connected to cTrader.
+2025-09-03 14:54:02.569 +03:30 [INF] cTrader session is fully connected and authorized.
+2025-09-03 14:54:02.581 +03:30 [INF] Hangfire job started at: "2025-09-03T14:54:02.5801760+03:30"
+2025-09-03 14:54:02.590 +03:30 [INF] Sending a simple TEST request (ProtoOAVersionReq)...
+2025-09-03 14:54:04.596 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.2 ms
+2025-09-03 14:54:06.693 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:54:08.713 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:54:10.741 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:54:12.756 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:54:14.784 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.2 ms
+2025-09-03 14:54:16.797 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:54:17.886 +03:30 [ERR] The TEST request (ProtoOAVersionReq) also failed.
+System.TimeoutException: Timeout waiting for response of type ProtoOAVersionRes
+   at Infrastructure.Services.CTraderInfoService.GetAccountInfoAsync() in D:\Trader\Trader\Infrastructure\Services\CTraderInfoService.cs:line 114
+2025-09-03 14:54:17.937 +03:30 [ERR] Could not fetch market data or account info for job execution.
+2025-09-03 14:54:18.823 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.4 ms
+2025-09-03 14:54:20.851 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:54:22.886 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:54:24.914 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.2 ms
+2025-09-03 14:54:26.951 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.2 ms
+2025-09-03 14:54:29.540 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:54:31.579 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:54:33.653 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:54:35.678 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:54:37.725 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:54:39.792 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:54:41.820 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:54:43.877 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.7 ms
+2025-09-03 14:54:45.929 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:54:47.970 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:54:50.024 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:54:52.052 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:54:54.075 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:54:56.126 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:54:58.143 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:55:00.162 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:55:02.193 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.4 ms
+2025-09-03 14:55:04.272 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:55:06.345 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:55:08.375 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:55:10.426 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:55:12.523 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:55:14.625 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:55:16.700 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:55:18.756 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:55:20.822 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:55:22.868 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.4 ms
+2025-09-03 14:55:25.012 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:55:27.062 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 14:55:29.091 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:55:31.118 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:55:33.136 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:55:35.249 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:55:37.315 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:55:39.351 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:55:41.384 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 14:55:43.413 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.5 ms
+2025-09-03 14:55:45.458 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 14:55:47.483 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:55:49.506 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:55:51.530 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.3 ms
+2025-09-03 14:55:53.557 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:55:55.575 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:55:57.608 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:55:59.643 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:56:01.667 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:56:03.704 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.0 ms
+2025-09-03 14:56:05.740 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:56:07.840 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.4 ms
+2025-09-03 14:56:09.973 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.4 ms
+2025-09-03 14:56:12.074 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.4 ms
+2025-09-03 14:56:14.106 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:56:16.215 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:56:18.248 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:56:20.280 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 14:56:22.350 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 14:56:24.498 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:56:26.531 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:56:28.556 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 14:56:30.584 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:56:32.609 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:56:34.705 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:56:36.737 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:56:38.750 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:56:40.783 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:56:42.844 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.4 ms
+2025-09-03 14:56:44.872 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:56:46.891 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 14:56:48.915 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:56:50.936 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.1 ms
+2025-09-03 14:56:52.982 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 14:56:55.015 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 14:56:57.034 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 14:56:59.062 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 14:57:01.085 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:57:03.110 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 14:57:05.731 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 14:57:07.778 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 14:57:09.885 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:06:09.443 +03:30 [WRN] The WebRootPath was not found: D:\Trader\Trader\Api\wwwroot. Static files may be unavailable.
+2025-09-03 17:06:10.274 +03:30 [INF] Starting Hangfire Server using job storage: 'Hangfire.MemoryStorage.MemoryStorage'
+2025-09-03 17:06:10.287 +03:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-09-03 17:06:10.529 +03:30 [INF] Server desktop-oc3thlo:8492:8eb1acee successfully announced in 30.6064 ms
+2025-09-03 17:06:10.553 +03:30 [INF] Server desktop-oc3thlo:8492:8eb1acee is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-09-03 17:06:11.118 +03:30 [INF] Server desktop-oc3thlo:8492:8eb1acee all the dispatchers started
+2025-09-03 17:06:27.399 +03:30 [INF] HTTP GET /hangfire responded 200 in 222.4 ms
+2025-09-03 17:06:27.662 +03:30 [INF] HTTP GET /hangfire/css-dark18210577790747 responded 200 in 78.6 ms
+2025-09-03 17:06:27.773 +03:30 [INF] HTTP GET /hangfire/css1821020564521 responded 200 in 242.1 ms
+2025-09-03 17:06:27.873 +03:30 [INF] HTTP GET /hangfire/js18210690927707 responded 200 in 218.0 ms
+2025-09-03 17:06:30.278 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 146.4 ms
+2025-09-03 17:06:30.763 +03:30 [ERR] HTTP POST /hangfire/stats responded 500 in 459.9 ms
+Microsoft.AspNetCore.Server.Kestrel.Core.BadHttpRequestException: Unexpected end of request content.
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http.Http1ContentLengthMessageBody.ReadAsyncInternal(CancellationToken cancellationToken)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Microsoft.AspNetCore.WebUtilities.FormPipeReader.ReadFormAsync(CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Http.Features.FormFeature.InnerReadFormAsync(CancellationToken cancellationToken)
+   at Hangfire.Dashboard.AspNetCoreDashboardRequest.GetFormValuesAsync(String key) in C:\projects\hangfire-525\src\Hangfire.AspNetCore\Dashboard\AspNetCoreDashboardRequest.cs:line 43
+   at Hangfire.Dashboard.JsonStats.Dispatch(DashboardContext context) in C:\projects\hangfire-525\src\Hangfire.Core\Dashboard\JsonStats.cs:line 29
+   at Hangfire.Dashboard.AspNetCoreDashboardMiddleware.Invoke(HttpContext httpContext) in C:\projects\hangfire-525\src\Hangfire.AspNetCore\Dashboard\AspNetCoreDashboardMiddleware.cs:line 99
+   at Microsoft.AspNetCore.Builder.Extensions.MapMiddleware.InvokeCore(HttpContext context, PathString matchedPath, PathString remainingPath)
+   at Serilog.AspNetCore.RequestLoggingMiddleware.Invoke(HttpContext httpContext)
+2025-09-03 17:06:33.020 +03:30 [INF] HTTP POST /hangfire/recurring/trigger responded 204 in 142.8 ms
+2025-09-03 17:06:33.107 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 27.8 ms
+2025-09-03 17:06:33.145 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 131.9 ms
+2025-09-03 17:06:33.159 +03:30 [WRN] You do not have a valid license key for the Lucky Penny software MediatR. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2025-09-03 17:06:34.327 +03:30 [INF] Successfully connected to cTrader.
+2025-09-03 17:06:34.383 +03:30 [INF] cTrader session is fully connected and authorized.
+2025-09-03 17:06:34.394 +03:30 [INF] --- Starting End-to-End Test ---
+2025-09-03 17:06:34.398 +03:30 [INF] C#: Attempting to connect to MQL4 pipe server...
+2025-09-03 17:06:34.419 +03:30 [INF] C#: Connection successful.
+2025-09-03 17:06:34.430 +03:30 [INF] C#: Sent command to MT4: 'GET_PRICE,EURUSD'
+2025-09-03 17:06:34.495 +03:30 [ERR] C#: An error occurred while communicating with the MQL4 pipe.
+System.IO.IOException: Pipe is broken.
+   at System.IO.Pipes.PipeStream.WaitForPipeDrain()
+   at Infrastructure.Helpers.MetaTraderPipeClient.SendCommand(String command, ILogger logger) in D:\Trader\Trader\Infrastructure\Helpers\MetaTraderPipeClient.cs:line 26
+2025-09-03 17:06:34.501 +03:30 [INF] --- Test Finished. Response from MT4: ERROR,Pipe is broken. ---
+2025-09-03 17:06:36.193 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.1 ms
+2025-09-03 17:06:38.326 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.5 ms
+2025-09-03 17:06:40.448 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 3.5 ms
+2025-09-03 17:06:42.529 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:06:44.568 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:06:46.681 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.3 ms
+2025-09-03 17:14:30.982 +03:30 [WRN] The WebRootPath was not found: D:\Trader\Trader\Api\wwwroot. Static files may be unavailable.
+2025-09-03 17:14:31.323 +03:30 [INF] Starting Hangfire Server using job storage: 'Hangfire.MemoryStorage.MemoryStorage'
+2025-09-03 17:14:31.327 +03:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-09-03 17:14:31.422 +03:30 [INF] Server desktop-oc3thlo:11372:94988cc2 successfully announced in 14.4755 ms
+2025-09-03 17:14:31.433 +03:30 [INF] Server desktop-oc3thlo:11372:94988cc2 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-09-03 17:14:31.605 +03:30 [INF] Server desktop-oc3thlo:11372:94988cc2 all the dispatchers started
+2025-09-03 17:14:58.904 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 249.8 ms
+2025-09-03 17:14:59.039 +03:30 [INF] HTTP GET /hangfire/css-dark1821057258340 responded 200 in 25.3 ms
+2025-09-03 17:14:59.073 +03:30 [INF] HTTP GET /hangfire/css18210107044695 responded 200 in 60.0 ms
+2025-09-03 17:14:59.075 +03:30 [INF] HTTP GET /hangfire/js18210699356426 responded 200 in 61.4 ms
+2025-09-03 17:15:01.484 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 103.3 ms
+2025-09-03 17:15:01.735 +03:30 [INF] HTTP POST /hangfire/recurring/trigger responded 204 in 129.6 ms
+2025-09-03 17:15:01.783 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 16.8 ms
+2025-09-03 17:15:01.837 +03:30 [WRN] You do not have a valid license key for the Lucky Penny software MediatR. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2025-09-03 17:15:03.113 +03:30 [INF] Successfully connected to cTrader.
+2025-09-03 17:15:03.161 +03:30 [INF] cTrader session is fully connected and authorized.
+2025-09-03 17:15:03.187 +03:30 [INF] --- Starting End-to-End Test ---
+2025-09-03 17:15:03.304 +03:30 [INF] C#: Attempting to connect to MQL4 pipe server...
+2025-09-03 17:15:03.332 +03:30 [INF] C#: Connection successful.
+2025-09-03 17:15:03.371 +03:30 [INF] C#: Sent command to MT4: 'GET_PRICE,EURUSD'
+2025-09-03 17:15:04.279 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 6.8 ms
+2025-09-03 17:15:06.325 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.1 ms
+2025-09-03 17:15:08.449 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:15:10.463 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:15:12.487 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.6 ms
+2025-09-03 17:15:14.515 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.8 ms
+2025-09-03 17:15:16.545 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:15:18.564 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.6 ms
+2025-09-03 17:15:20.593 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:15:22.619 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:15:24.639 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:15:26.658 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 17:15:28.685 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 17:15:30.720 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.1 ms
+2025-09-03 17:15:33.049 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.1 ms
+2025-09-03 17:15:35.077 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:15:37.109 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:15:39.127 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:15:41.147 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.2 ms
+2025-09-03 17:15:43.167 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.9 ms
+2025-09-03 17:15:45.185 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:15:45.238 +03:30 [INF] Server desktop-oc3thlo:11372:94988cc2 caught stopping signal...
+2025-09-03 17:15:46.064 +03:30 [INF] Server desktop-oc3thlo:11372:94988cc2 caught stopped signal...
+2025-09-03 17:16:01.145 +03:30 [WRN] Server desktop-oc3thlo:11372:94988cc2 caught shutdown signal...
+2025-09-03 17:16:01.257 +03:30 [WRN] Server desktop-oc3thlo:11372:94988cc2 stopped non-gracefully due to Worker. Outstanding work on those dispatchers could be aborted, and there can be delays in background processing. This server instance will be incorrectly shown as active for a while. To avoid non-graceful shutdowns, investigate what prevents from stopping gracefully and add CancellationToken support for those methods.
+2025-09-03 17:16:01.368 +03:30 [INF] Server desktop-oc3thlo:11372:94988cc2 successfully reported itself as stopped in 2.0696 ms
+2025-09-03 17:16:01.370 +03:30 [INF] Server desktop-oc3thlo:11372:94988cc2 has been stopped in total 16068.4688 ms
+2025-09-03 17:40:54.277 +03:30 [WRN] The WebRootPath was not found: D:\Trader\Trader\Api\wwwroot. Static files may be unavailable.
+2025-09-03 17:40:54.711 +03:30 [INF] Starting Hangfire Server using job storage: 'Hangfire.MemoryStorage.MemoryStorage'
+2025-09-03 17:40:54.720 +03:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-09-03 17:40:54.866 +03:30 [INF] Server desktop-oc3thlo:1748:a9828fe2 successfully announced in 27.5223 ms
+2025-09-03 17:40:54.876 +03:30 [INF] Server desktop-oc3thlo:1748:a9828fe2 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-09-03 17:40:55.228 +03:30 [INF] Server desktop-oc3thlo:1748:a9828fe2 all the dispatchers started
+2025-09-03 17:41:50.171 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 301.5 ms
+2025-09-03 17:41:50.296 +03:30 [INF] HTTP GET /hangfire/css-dark182101790609740 responded 200 in 22.3 ms
+2025-09-03 17:41:50.330 +03:30 [INF] HTTP GET /hangfire/css182101507485898 responded 200 in 54.9 ms
+2025-09-03 17:41:50.335 +03:30 [INF] HTTP GET /hangfire/js182102084178949 responded 200 in 61.4 ms
+2025-09-03 17:41:52.314 +03:30 [INF] HTTP POST /hangfire/recurring/trigger responded 204 in 128.6 ms
+2025-09-03 17:41:52.368 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 19.2 ms
+2025-09-03 17:41:52.432 +03:30 [WRN] You do not have a valid license key for the Lucky Penny software MediatR. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2025-09-03 17:41:53.655 +03:30 [INF] Successfully connected to cTrader.
+2025-09-03 17:41:53.715 +03:30 [INF] cTrader session is fully connected and authorized.
+2025-09-03 17:41:53.735 +03:30 [INF] --- Starting End-to-End Test ---
+2025-09-03 17:41:53.744 +03:30 [INF] C#: Attempting to connect to MQL4 pipe server...
+2025-09-03 17:41:54.021 +03:30 [INF] C#: Connection successful.
+2025-09-03 17:41:54.023 +03:30 [INF] C#: Sent command to MT4: 'GET_PRICE,EURUSD'
+2025-09-03 17:41:54.979 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 60.4 ms
+2025-09-03 17:41:57.001 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.8 ms
+2025-09-03 17:41:59.022 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.3 ms
+2025-09-03 17:42:01.040 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 17:42:03.062 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:42:05.090 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.8 ms
+2025-09-03 17:42:07.119 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:42:09.149 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:42:11.163 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:42:13.188 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:42:15.204 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:42:17.231 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:42:19.253 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:42:21.285 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:42:23.679 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 19.4 ms
+2025-09-03 17:42:25.693 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:42:27.716 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:42:29.733 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 17:42:31.750 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:42:33.787 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:42:35.815 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:42:37.878 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.1 ms
+2025-09-03 17:42:39.900 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:42:41.931 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:42:43.952 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:42:45.975 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:42:47.994 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:42:48.591 +03:30 [INF] HTTP POST /hangfire/recurring/trigger responded 204 in 4.8 ms
+2025-09-03 17:42:48.592 +03:30 [INF] --- Starting End-to-End Test ---
+2025-09-03 17:42:48.596 +03:30 [INF] C#: Attempting to connect to MQL4 pipe server...
+2025-09-03 17:42:48.627 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 4.9 ms
+2025-09-03 17:42:50.861 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:42:53.206 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 17:42:53.682 +03:30 [ERR] C#: Connection timed out. Is the EA running on a chart in MT4 with a smiling face?
+2025-09-03 17:42:53.685 +03:30 [INF] --- Test Finished. Response from MT4: ERROR,Connection timed out ---
+2025-09-03 17:42:55.233 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 3.1 ms
+2025-09-03 17:42:57.262 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:42:59.288 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.1 ms
+2025-09-03 17:43:01.404 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 17:43:03.437 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:43:05.888 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:43:07.923 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:43:09.957 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.3 ms
+2025-09-03 17:43:11.978 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:43:14.018 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:43:16.034 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:43:18.060 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 17:43:20.085 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:43:22.106 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 17:43:24.126 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.1 ms
+2025-09-03 17:43:26.203 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.1 ms
+2025-09-03 17:43:28.291 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:43:30.323 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 17:43:32.343 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:43:34.418 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 17:43:36.444 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:43:38.600 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:43:40.619 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:43:42.639 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.8 ms
+2025-09-03 17:43:44.663 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:43:46.750 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 17:43:48.861 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.8 ms
+2025-09-03 17:43:50.909 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:43:52.939 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.2 ms
+2025-09-03 17:43:55.019 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:43:57.091 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:43:59.200 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:44:01.276 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:44:03.366 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.7 ms
+2025-09-03 17:44:05.468 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:44:07.518 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.4 ms
+2025-09-03 17:44:09.562 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:44:11.601 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:44:13.627 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:44:15.665 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.2 ms
+2025-09-03 17:44:17.704 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 17:44:19.734 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:44:21.754 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:44:23.791 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:44:25.817 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.1 ms
+2025-09-03 17:44:27.842 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:44:29.867 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:44:31.895 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.2 ms
+2025-09-03 17:44:33.913 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:44:35.933 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:44:37.971 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 17:44:40.013 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:44:42.163 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.8 ms
+2025-09-03 17:44:44.197 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:44:46.231 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.4 ms
+2025-09-03 17:44:48.265 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.3 ms
+2025-09-03 17:44:50.294 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.5 ms
+2025-09-03 17:44:52.362 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 3.0 ms
+2025-09-03 17:53:08.530 +03:30 [WRN] The WebRootPath was not found: D:\Trader\Trader\Api\wwwroot. Static files may be unavailable.
+2025-09-03 17:53:08.973 +03:30 [INF] Starting Hangfire Server using job storage: 'Hangfire.MemoryStorage.MemoryStorage'
+2025-09-03 17:53:08.978 +03:30 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-09-03 17:53:09.122 +03:30 [INF] Server desktop-oc3thlo:240:9b157683 successfully announced in 24.9358 ms
+2025-09-03 17:53:09.140 +03:30 [INF] Server desktop-oc3thlo:240:9b157683 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-09-03 17:53:09.391 +03:30 [INF] Server desktop-oc3thlo:240:9b157683 all the dispatchers started
+2025-09-03 17:53:16.668 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 314.5 ms
+2025-09-03 17:53:16.789 +03:30 [INF] HTTP GET /hangfire/css-dark182102101209915 responded 200 in 14.7 ms
+2025-09-03 17:53:16.799 +03:30 [INF] HTTP GET /hangfire/css18210340887625 responded 200 in 25.3 ms
+2025-09-03 17:53:16.926 +03:30 [INF] HTTP GET /hangfire/js18210145332703 responded 200 in 152.3 ms
+2025-09-03 17:53:18.942 +03:30 [INF] HTTP POST /hangfire/recurring/trigger responded 204 in 120.2 ms
+2025-09-03 17:53:19.002 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 19.0 ms
+2025-09-03 17:53:19.057 +03:30 [WRN] You do not have a valid license key for the Lucky Penny software MediatR. This is allowed for development and testing scenarios. If you are running in production you are required to have a licensed version. Please visit https://luckypennysoftware.com to obtain a valid license.
+2025-09-03 17:53:20.073 +03:30 [INF] Successfully connected to cTrader.
+2025-09-03 17:53:20.140 +03:30 [INF] cTrader session is fully connected and authorized.
+2025-09-03 17:53:20.151 +03:30 [INF] --- Sending TRADE Command to MT4 ---
+2025-09-03 17:53:22.092 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 63.7 ms
+2025-09-03 17:53:24.120 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.7 ms
+2025-09-03 17:53:26.154 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.1 ms
+2025-09-03 17:53:28.175 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:53:30.198 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:53:32.224 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:53:34.255 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:53:36.279 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:53:38.303 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.2 ms
+2025-09-03 17:53:40.399 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.3 ms
+2025-09-03 17:53:42.428 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.3 ms
+2025-09-03 17:53:44.445 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:53:46.475 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 17:53:48.502 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.2 ms
+2025-09-03 17:53:50.516 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.1 ms
+2025-09-03 17:53:52.811 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:53:54.844 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.1 ms
+2025-09-03 17:53:56.869 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:53:58.891 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:54:00.914 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:54:02.950 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:54:04.965 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:54:06.992 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:54:09.026 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 3.1 ms
+2025-09-03 17:54:11.068 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:54:13.096 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.9 ms
+2025-09-03 17:54:15.148 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:54:17.219 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:54:19.263 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:54:21.322 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:54:23.348 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 17:54:25.365 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:54:27.388 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:54:29.515 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:54:31.542 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:54:33.571 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:54:35.596 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:54:37.618 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:54:39.653 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:54:41.718 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:54:43.735 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 17:54:45.763 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.3 ms
+2025-09-03 17:54:47.783 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:54:49.884 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:54:52.042 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:54:54.060 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.2 ms
+2025-09-03 17:54:56.135 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 17:54:58.236 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:55:00.257 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:55:02.366 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:55:04.379 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 17:55:06.401 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:55:08.425 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.3 ms
+2025-09-03 17:55:10.456 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.8 ms
+2025-09-03 17:55:12.579 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:55:14.593 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:55:16.620 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 17:55:18.698 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:55:20.735 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:55:22.902 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:55:25.066 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.2 ms
+2025-09-03 17:55:27.086 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:55:29.110 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.3 ms
+2025-09-03 17:55:31.136 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.1 ms
+2025-09-03 17:55:33.175 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.8 ms
+2025-09-03 17:55:35.209 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:55:37.225 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:55:39.248 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 17:55:41.279 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 17:55:43.302 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:55:45.403 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:55:47.431 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:55:49.452 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:55:51.485 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:55:53.530 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:55:55.628 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:55:57.695 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:55:59.713 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:56:01.729 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:56:03.757 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:56:05.777 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.0 ms
+2025-09-03 17:56:07.796 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:56:09.816 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.3 ms
+2025-09-03 17:56:11.971 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:56:13.999 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:56:16.038 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.9 ms
+2025-09-03 17:56:18.054 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:56:20.073 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:56:22.099 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.3 ms
+2025-09-03 17:56:24.139 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:56:26.230 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:56:28.259 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:56:30.339 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.2 ms
+2025-09-03 17:56:32.366 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:56:34.424 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:56:36.453 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:56:38.472 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.2 ms
+2025-09-03 17:56:40.618 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.4 ms
+2025-09-03 17:56:42.657 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:56:44.683 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.5 ms
+2025-09-03 17:56:46.703 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:56:48.738 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:56:50.775 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:56:52.791 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.7 ms
+2025-09-03 17:56:54.872 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:56:56.889 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.3 ms
+2025-09-03 17:56:58.908 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 17:57:00.939 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:57:02.979 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.3 ms
+2025-09-03 17:57:05.086 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.1 ms
+2025-09-03 17:57:07.144 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.6 ms
+2025-09-03 17:57:09.219 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 3.3 ms
+2025-09-03 17:57:09.351 +03:30 [INF] HTTP POST /hangfire/recurring/trigger responded 204 in 4.5 ms
+2025-09-03 17:57:09.353 +03:30 [INF] --- Sending TRADE Command to MT4 ---
+2025-09-03 17:57:09.391 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 3.5 ms
+2025-09-03 17:57:11.233 +03:30 [INF] HTTP POST /hangfire/recurring/trigger responded 204 in 2.7 ms
+2025-09-03 17:57:11.236 +03:30 [INF] --- Sending TRADE Command to MT4 ---
+2025-09-03 17:57:11.270 +03:30 [INF] HTTP GET /hangfire/recurring responded 200 in 3.6 ms
+2025-09-03 17:57:13.615 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.8 ms
+2025-09-03 17:57:15.021 +03:30 [WRN] Failed to process the job 'ca597d78-a4ec-442a-bbb6-115b5127a2c5': an exception occurred. Retry attempt 1 of 10 will be performed in 00:00:44.
+System.TimeoutException: The operation has timed out.
+   at System.IO.Pipes.NamedPipeClientStream.ConnectInternal(Int32 timeout, CancellationToken cancellationToken, Int32 startTime)
+   at Infrastructure.MetaTraderPipeClient.SendCommand(String command, ILogger`1 logger) in D:\Trader\Trader\Infrastructure\NamedPipeClientStream.cs:line 15
+   at Infrastructure.Extention.TradingJob.Execute() in D:\Trader\Trader\Infrastructure\Extention\TradingJob.cs:line 49
+   at InvokeStub_TaskAwaiter.GetResult(Object, Object, IntPtr*)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+2025-09-03 17:57:15.669 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.1 ms
+2025-09-03 17:57:16.510 +03:30 [WRN] Failed to process the job '22225bd5-5964-4840-a901-980b9213aa32': an exception occurred. Retry attempt 1 of 10 will be performed in 00:00:19.
+System.TimeoutException: The operation has timed out.
+   at System.IO.Pipes.NamedPipeClientStream.ConnectInternal(Int32 timeout, CancellationToken cancellationToken, Int32 startTime)
+   at Infrastructure.MetaTraderPipeClient.SendCommand(String command, ILogger`1 logger) in D:\Trader\Trader\Infrastructure\NamedPipeClientStream.cs:line 15
+   at Infrastructure.Extention.TradingJob.Execute() in D:\Trader\Trader\Infrastructure\Extention\TradingJob.cs:line 49
+   at InvokeStub_TaskAwaiter.GetResult(Object, Object, IntPtr*)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+2025-09-03 17:57:17.711 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.8 ms
+2025-09-03 17:57:19.743 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.3 ms
+2025-09-03 17:57:21.776 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.7 ms
+2025-09-03 17:57:23.810 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 2.2 ms
+2025-09-03 17:57:25.853 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 4.8 ms
+2025-09-03 17:57:27.879 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.4 ms
+2025-09-03 17:57:29.977 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 4.3 ms
+2025-09-03 17:57:32.052 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 0.9 ms
+2025-09-03 17:57:34.100 +03:30 [INF] HTTP POST /hangfire/stats responded 200 in 1.6 ms

@@ -1,12 +1,11 @@
 using System.Threading.RateLimiting;
 using Application.Behaviors;
-using Application.Handler;
 using Application.Validation;
-using Domain;
 using Domain.Polisy;
 using Domain.Services;
 using FluentValidation;
-using Infrastructure.Behaviors;
+using Hangfire;
+using Hangfire.MemoryStorage;
 using Infrastructure.Extention;
 using Infrastructure.Maine;
 using Infrastructure.Memory;
@@ -18,7 +17,17 @@ using Serilog.Debugging;
 using Serilog.Events;
 using Serilog.Exceptions;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddHangfire(config => config
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseMemoryStorage());
+
+builder.Services.AddHangfireServer();
 
 // -------------------- Serilog --------------------
 SelfLog.Enable(msg => Console.Error.WriteLine("SERILOG-SELFLOG: " + msg));
@@ -84,12 +93,6 @@ builder.Services.AddOpenApiDocument(options =>
 builder.Services.AddValidatorsFromAssemblyContaining<EvaluateValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<EvalExecValidator>();
 
-// MediatR Handlers
-builder.Services.AddMediatR(cfg =>
-{
-    cfg.RegisterServicesFromAssembly(typeof(EvaluateHandler).Assembly);
-    cfg.RegisterServicesFromAssembly(typeof(EvalExecHandler).Assembly);
-});
 
 // Domain services
 builder.Services.AddSingleton<IClock, SystemClock>();
@@ -105,19 +108,10 @@ builder.Services.AddSingleton<ISeriesStore, InMemorySeriesStore>();
 builder.Services.Configure<CTraderOpenApiOptions>(builder.Configuration.GetSection("CTrader"));
 builder.Services.AddSingleton<CTraderOpenApiSession>();
 
-var ctSection = builder.Configuration.GetSection("CTrader");
-var accessToken = ctSection["AccessToken"];
-var accountIdStr = ctSection["AccountId"];
-var hasCtAuth = !string.IsNullOrWhiteSpace(accessToken)
-                && long.TryParse(accountIdStr, out var parsedId)
-                && parsedId > 0;
 
-if (hasCtAuth)
-    builder.Services.AddSingleton<IOrderExecutionPort, CTraderOrderExecutionPort>();
-else
-    builder.Services.AddSingleton<IOrderExecutionPort, PaperOrderExecutionPort>();
+builder.Services.Configure<CTraderOpenApiOptions>(builder.Configuration.GetSection("CTrader"));
+builder.Services.AddSingleton<CTraderSession>(); 
 
-// Rate limiting
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -142,7 +136,7 @@ app.UseSerilogRequestLogging(opts =>
 {
     opts.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0} ms";
 });
-
+app.UseHangfireDashboard();
 app.MapControllers();
 
 app.UseOpenApi(cfg =>
@@ -156,5 +150,10 @@ app.MapScalarApiReference(opt =>
     opt.WithOpenApiRoutePattern("/openapi/docs.json");
     opt.Title = "Trader API";
 });
+
+RecurringJob.AddOrUpdate<TradingJob>(
+    recurringJobId: "trading-bot-job", 
+    methodCall: job => job.Execute(), 
+    cronExpression: Cron.Hourly()); 
 
 app.Run();

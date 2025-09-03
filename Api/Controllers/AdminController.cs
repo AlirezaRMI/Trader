@@ -10,12 +10,12 @@ namespace Api.Controllers;
 [Tags("Admin")]
 public sealed class AdminController : ControllerBase
 {
-    [HttpPost("policy/reset")]
-    public IActionResult Reset([FromServices] DailyTradePolicy gate)
-    {
-        gate.Reset();
-        return Ok(new {ok = true, reset = true});
-    }
+    // [HttpPost("policy/reset")]
+    // public IActionResult Reset([FromServices] DailyTradePolicy gate)
+    // {
+    //     gate.Reset();
+    //     return Ok(new {ok = true, reset = true});
+    // }
 
     [HttpPost("telegram/test")]
     public async Task<IActionResult> TelegramTest([FromServices] IConfiguration cfg)

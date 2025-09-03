@@ -22,10 +22,9 @@ public sealed class TradeController(
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Evaluate([FromBody] EvaluateCommand cmd)
     {
-        var res = await evalV.ValidateAsync(cmd);
-        var decision = await mediator.Send(cmd); 
-        var csv = $"{decision.Action},{decision.Size},{decision.Sl},{decision.Tp},{decision.Note.Replace(',', ' ')}";
-        return Content(csv, "text/plain");
+        var decision = await mediator.Send(cmd);
+        var resultText = $"Action: {decision.Action}, Size: {decision.PositionSizeLots}, SL: {decision.StopLossPrice}, TP: {decision.TakeProfitPrice}";
+        return Ok(resultText);
     }
 
     
@@ -38,7 +37,6 @@ public sealed class TradeController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> EvalExec([FromBody] EvalExecCommand cmd)
     {
-        var res = await execV.ValidateAsync(cmd);
         var result = await mediator.Send(cmd);
         return Ok(result);
     }

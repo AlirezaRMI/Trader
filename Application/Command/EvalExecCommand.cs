@@ -17,4 +17,4 @@ public sealed record EvalExecCommand(
     int OpenTrades
 ) : IRequest<EvalExecResult>, IRequest<DecisionDto>;
 
-public sealed record EvalExecResult(string Status, long? OrderId, string Note);
+public sealed record EvalExecResult(string Status, long? OrderId, string? Note);
