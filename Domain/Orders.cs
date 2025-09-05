@@ -33,9 +33,4 @@ public record TradeExecutionResult
     {
         return new TradeExecutionResult(true, orderId, note, null);
     }
-
-    public static TradeExecutionResult Failure(string error)
-    {
-        return new TradeExecutionResult(false, null, null, error);
-    }
 }

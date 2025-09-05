@@ -1,6 +1,6 @@
 ﻿using Domain.Trading;
 
-namespace Domain.Services;
+namespace Domain.Services.Interfaces;
 
 public interface ISeriesReader
 {

@@ -3,6 +3,7 @@ using Serilog.Events;
 using Serilog.Sinks.PeriodicBatching;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace Infrastructure.Telegram;
 
@@ -20,11 +21,11 @@ public sealed class TelegramBotSink(
     private readonly string _chatId = chatId ?? throw new ArgumentNullException(nameof(chatId));
 
     private const int MaxText = 4000;
+    private static readonly Random Rnd = new();
 
     protected override async Task EmitBatchAsync(IEnumerable<LogEvent> events)
     {
         var sb = new StringBuilder();
-
         foreach (var e in events)
         {
             var line = Format(e);
@@ -33,6 +34,7 @@ public sealed class TelegramBotSink(
                 await SendAsync(sb.ToString());
                 sb.Clear();
             }
+
             sb.AppendLine(line);
         }
 
@@ -40,43 +42,211 @@ public sealed class TelegramBotSink(
             await SendAsync(sb.ToString());
     }
 
-    private static string Emoji(LogEventLevel level) => level switch
-    {
-        LogEventLevel.Information => "ℹ️",
-        LogEventLevel.Warning     => "⚠️",
-        LogEventLevel.Error       => "❌",
-        LogEventLevel.Fatal       => "💥",
-        LogEventLevel.Debug       => "🐞",
-        LogEventLevel.Verbose     => "🔍",
-        _                         => "ℹ️"
-    };
-
     private static string Format(LogEvent e)
     {
-        var ts  = DateTimeOffset.Now.ToString("HH:mm:ss");
-        var msg = e.RenderMessage();
+        var eventType = GetProperty(e, "EventType");
 
-        var side    = Pick("Side");
-        var symbol  = Pick("Symbol");
-        var lots    = Pick("Lots");
-        var orderId = Pick("OrderId");
+        switch (eventType)
+        {
+            case "TradeOpened":
+            {
+                var side = GetProperty(e, "Side") == "Buy" ? "خرید" : "فروش";
+                var lots = GetProperty(e, "Lots");
+                var symbol = GetProperty(e, "Symbol");
+                var ticket = GetProperty(e, "Ticket");
+             
+                var entryPrice = GetProperty(e, "EntryPrice");
+                var stopLoss = GetProperty(e, "StopLoss");
+                var takeProfit = GetProperty(e, "TakeProfit");
+               
 
-        var tail = (!string.IsNullOrEmpty(side) || !string.IsNullOrEmpty(symbol))
-            ? $" • {side} {lots} {symbol} {(string.IsNullOrEmpty(orderId) ? "" : $"#{orderId}")}"
-            : "";
+                var templates = new[]
+                {
+                    $"🤣📈 یه معامله باز شد!\n\n" +
+                    $"🍟 نوع: {side}\n" +
+                    $"🥤 حجم: {lots} لات\n" +
+                    $"🍕 نماد: {symbol}\n" +
+                    $"🎯 نقطه ورود: {entryPrice}\n" +
+                    $"🛡️ حد ضرر: {stopLoss}\n" +
+                    $"💰 حد سود: {takeProfit}\n" +
+                    $"🎫 تیکت: {ticket}\n\n" +
+                    $"گوه تو روح بواش که ضرر کنه!",
 
-        var text = $"{Emoji(e.Level)} [{ts}] {msg}{tail}";
+                    $"💥🕶️ هوو! معامله زدیم!\n\n" +
+                    $"📊 نوع: {side}\n" +
+                    $"📦 حجم: {lots} لات\n" +
+                    $"💹 نماد: {symbol}\n" +
+                    $"🎯 ورود: {entryPrice}\n" +
+                    $"🛡️ استاپ: {stopLoss}\n" +
+                    $"💰 تارگت: {takeProfit}\n" +
+                    $"🎫 تیکت: {ticket}\n\n" +
+                    $"بکن توش لامصب!!! 😎",
 
-        if (e.Exception != null)
-            text += Environment.NewLine + "EX: " + e.Exception.Message;
+                    $"🤬 معامله باز شد!\n\n" +
+                    $"📌 نوع: {side}\n" +
+                    $"⚖️ حجم: {lots} لات\n" +
+                    $"💲 نماد: {symbol}\n" +
+                    $"🎯 ورود: {entryPrice}\n" +
+                    $"🛡️ ضرر: {stopLoss}\n" +
+                    $"💰 سود: {takeProfit}\n" +
+                    $"🎫 تیکت: {ticket}\n\n" +
+                    $"ربات هٍرٍلی میکشد و بازار میگروسد!",
 
-        return text;
+                    $"🖕 معامله جدید ثبت شد.\n\n" +
+                    $"🔸 نوع: {side}\n" +
+                    $"🔸 حجم: {lots} لات\n" +
+                    $"🔸 نماد: {symbol}\n" +
+                    $"🔸 ورود: {entryPrice}\n" +
+                    $"🔸 استاپ: {stopLoss}\n" +
+                    $"🔸 تارگت: {takeProfit}\n" +
+                    $"🔸 تیکت: {ticket}\n\n" +
+                    $"توشی لای لای ... بریم بزاریم به بازار 😡",
 
-        string Pick(string name) => e.Properties.TryGetValue(name, out var v) ? v.ToString().Trim('"') : "";
+                    $"👹 معامله باز شد!\n\n" +
+                    $"🔪 نوع: {side}\n" +
+                    $"💣 حجم: {lots} لات\n" +
+                    $"☠️ نماد: {symbol}\n" +
+                    $"🎯 ورود: {entryPrice}\n" +
+                    $"🛡️ استاپ: {stopLoss}\n" +
+                    $"💰 تارگت: {takeProfit}\n" +
+                    $"🎫 تیکت: {ticket}\n\n" +
+                    $"شلوار های خود را در بیارید و خود را بکلاشنید!!! 🤬",
+                };
+
+                return templates[Rnd.Next(templates.Length)];
+            }
+
+            case "TradeClosed":
+            {
+                var closedTicket = GetProperty(e, "Ticket");
+                var profit = double.Parse(GetProperty(e, "Profit"));
+
+                if (profit >= 0)
+                {
+                    var templates = new[]
+                    {
+                        $"🤣💸 معامله با سود بسته شد!\n\n" +
+                        $"🎫 تیکت: {closedTicket}\n" +
+                        $"💰 سود: +{profit:F2}$\n\n" +
+                        $"یا بابابابابابا بلش بره جااااا!!!!",
+
+                        $"💰😎 معامله با موفقیت بسته شد.\n\n" +
+                        $"🎫 تیکت: {closedTicket}\n" +
+                        $"🤑 سود خالص: +{profit:F2}$\n\n" +
+                        $"نخوری به حق علی...بخور بگو بابام بزرگم کرد! 😎",
+
+                        $"🤬 سود گرفتیم!\n\n" +
+                        $"🎫 تیکت: {closedTicket}\n" +
+                        $"💲 سود: +{profit:F2}$\n\n" +
+                        $"بخوووووور دیوووووث بخووووور کونکش",
+
+                        $"🖕 معامله بسته شد.\n\n" +
+                        $"🎫 تیکت: {closedTicket}\n" +
+                        $"🤑 سود: +{profit:F2}$\n\n" +
+                        $"بازار کیرته اوستا...اومیی ری حال؟!",
+
+                        $"👹 سود رو کندم از گوشت تنت!\n\n" +
+                        $"🎫 تیکت: {closedTicket}\n" +
+                        $"💰 سود: +{profit:F2}$\n\n" +
+                        $"پامو ببوس دیوث! 🤬",
+                        
+                    };
+                    return templates[Rnd.Next(templates.Length)];
+                }
+                else
+                {
+                    var templates = new[]
+                    {
+                        $"🤣💔 معامله با ضرر بسته شد!\n\n" +
+                        $"🎫 تیکت: {closedTicket}\n" +
+                        $"📉 ضرر: {profit:F2}$\n\n" +
+                        $"کیرته کاکا...یکی دی! 🥤",
+
+                        $"👊😤 ضرر کردیم.\n\n" +
+                        $"🎫 تیکت: {closedTicket}\n" +
+                        $"💸 ضرر: {profit:F2}$\n\n" +
+                        $"ای سر خر به لنگ اجدادش!!!",
+
+                        $"🤬 ضرر خوردیم!\n\n" +
+                        $"🎫 تیکت: {closedTicket}\n" +
+                        $"📉 ضرر: {profit:F2}$\n\n" +
+                        $"ای کیر توش... تلافی به شادی ایشالله",
+
+                        $"🖕 ضرر شد!\n\n" +
+                        $"🎫 تیکت: {closedTicket}\n" +
+                        $"📉 مبلغ: {profit:F2}$\n\n" +
+                        $"بازار مادرجنده! خو ضرر و کیرخر 🤬",
+
+                        $"👹 از جیبم کندی!\n\n" +
+                        $"🎫 تیکت: {closedTicket}\n" +
+                        $"💸 ضرر: {profit:F2}$\n\n" +
+                        $"حرومزاده خارتوگاییدم! این حسابو صاف می‌کنم باهات 😡",
+                        
+                    };
+                    return templates[Rnd.Next(templates.Length)];
+                }
+            }
+            
+            case "Error":
+            {
+                var templates = new[]
+                {
+                    $"🤣💥 خطا رخ داد!\n\n" +
+                    $"🪲 پیام: {e.RenderMessage()}\n" +
+                    $"📌 جزئیات: {e.Exception?.Message}\n\n" +
+                    $"یکی کابلشو بکشه بزنه دوباره 🤣",
+                    
+                    $"😡❌ ارور خوردیم!\n\n" +
+                    $"🪲 پیام خطا: {e.RenderMessage()}\n" +
+                    $"📌 جزئیات: {e.Exception?.Message}\n\n" +
+                    $"وووو حالا درست ایبو صب کو😎",
+                    
+                    $"🤬 خطای لعنتی!\n\n" +
+                    $"🪲 خطا: {e.RenderMessage()}\n" +
+                    $"📌 جزئیات: {e.Exception?.Message}\n\n" +
+                    $"لعنت به این سیستم آشغال!",
+                    
+                    $"🖕 ربات قاط زد!\n\n" +
+                    $"🪲 مشکل: {e.RenderMessage()}\n" +
+                    $"📌 جزئیات: {e.Exception?.Message}\n\n" +
+                    $"یعنی بدبخت‌تر از این کُد پیدا نمیشه 🤬",
+                    
+                    $"👹 سیستم ترکید!\n\n" +
+                    $"🪲 خطا: {e.RenderMessage()}\n" +
+                    $"📌 جزئیات: {e.Exception?.Message}\n\n" +
+                    $"خاک تو سر این کد و سازنده‌ش 🤬",
+                    
+                };
+                return templates[Rnd.Next(templates.Length)];
+            }
+
+            default:
+            {
+                var templates = new[]
+                {
+                    $"🤣🖥️ آپدیت جدید:\n\n" +
+                    $"📝 {e.RenderMessage()}\n\n" +
+                    $"یعنی ربات هنوز زنده‌ست و قهوه‌شو خورده ☕",
+                    
+                    $"📢😎 لاگ سیستم:\n\n" +
+                    $"📝 {e.RenderMessage()}\n\n" +
+                    $"ربات بیداره داشی!",
+                    
+                    $"🤬 لاگ عمومی:\n\n" +
+                    $"📝 {e.RenderMessage()}\n\n" +
+                    $"هیچ نگران نبو...مشقی بی",
+                    
+                };
+                return templates[Rnd.Next(templates.Length)];
+            }
+        }
     }
 
-    private static ChatId ToChatId(string chatId)
-        => long.TryParse(chatId, out var id) ? new ChatId(id) : new ChatId(chatId);
+    private static string GetProperty(LogEvent e, string name) =>
+        e.Properties.TryGetValue(name, out var v) ? v.ToString().Trim('"') : "";
+
+    private static ChatId ToChatId(string chatId) =>
+        long.TryParse(chatId, out var id) ? new ChatId(id) : new ChatId(chatId);
 
     private async Task SendAsync(string text)
     {
@@ -85,8 +255,8 @@ public sealed class TelegramBotSink(
             await _bot.SendMessage(
                 chatId: ToChatId(_chatId),
                 text: text,
-                disableNotification: disableNotification,
-                cancellationToken: CancellationToken.None);
+                parseMode: ParseMode.Html,
+                disableNotification: disableNotification);
         }
         catch (Exception ex)
         {

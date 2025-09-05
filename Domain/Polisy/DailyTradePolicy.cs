@@ -1,24 +1,20 @@
-﻿// In Domain.Policy
+﻿
 namespace Domain.Polisy;
 
 public class DailyTradePolicy
 {
-    private static readonly List<DateTime> _tradesToday = new();
+    private static readonly List<DateTime> TradesToday = [];
     private const int MaxTradesPerDay = 5;
 
     public bool CanExecuteTrade()
     {
-        _tradesToday.RemoveAll(tradeTime => tradeTime.Date < DateTime.UtcNow.Date);
+        TradesToday.RemoveAll(tradeTime => tradeTime.Date < DateTime.UtcNow.Date);
 
-        if (_tradesToday.Count >= MaxTradesPerDay)
-        {
-            return false; 
-        }
-        return true;
+        return TradesToday.Count < MaxTradesPerDay;
     }
 
     public void RegisterTrade()
     {
-        _tradesToday.Add(DateTime.UtcNow);
+        TradesToday.Add(DateTime.UtcNow);
     }
 }

@@ -1,3 +1,3 @@
-﻿namespace Domain.Services;
+﻿namespace Domain.Services.Interfaces;
 
 public interface ISeriesStore: ISeriesReader {} 
