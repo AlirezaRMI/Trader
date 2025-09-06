@@ -14,22 +14,23 @@ builder.Host.UseSerilog((ctx, cfg) =>
     cfg.ReadFrom.Configuration(ctx.Configuration)
         .Enrich.FromLogContext()
         .WriteTo.Console();
-    
+
     var token = ctx.Configuration["Telegram:BotToken"];
-    var chat = ctx.Configuration["Telegram:ChatId"];
+    var chatIds = ctx.Configuration.GetSection("Telegram:ChatIds").Get<List<string>>();
     
-    if (!string.IsNullOrWhiteSpace(token) && !string.IsNullOrWhiteSpace(chat))
+    if (!string.IsNullOrWhiteSpace(token) && chatIds != null && chatIds.Count > 0)
     {
-        cfg.WriteTo.Logger(lc => lc
-
-            .Filter.ByIncludingOnly(e => e.Properties.ContainsKey("ops"))
-
-            .WriteTo.TelegramBot(
-                botToken: token,
-                chatId: chat,
-                restrictedToMinimumLevel: LogEventLevel.Information
-            )
-        );
+        foreach (var chatId in chatIds)
+        {
+            cfg.WriteTo.Logger(lc => lc
+                .Filter.ByIncludingOnly(e => e.Properties.ContainsKey("ops"))
+                .WriteTo.TelegramBot(
+                    botToken: token,
+                    chatId: chatId,
+                    restrictedToMinimumLevel: LogEventLevel.Information
+                )
+            );
+        }
     }
 });
 
