@@ -6,4 +6,11 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="HtmlAgilityPack" Version="1.12.2" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="2.1.1" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
+      <PackageReference Include="Microsoft.Playwright" Version="1.55.0" />
+    </ItemGroup>
+
 </Project>

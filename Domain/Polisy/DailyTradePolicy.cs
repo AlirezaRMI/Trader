@@ -4,7 +4,7 @@ namespace Domain.Polisy;
 public class DailyTradePolicy
 {
     private static readonly List<DateTime> TradesToday = [];
-    private const int MaxTradesPerDay = 5;
+    private const int MaxTradesPerDay = 10;
 
     public bool CanExecuteTrade()
     {

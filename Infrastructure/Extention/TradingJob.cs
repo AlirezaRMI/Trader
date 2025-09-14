@@ -1,18 +1,25 @@
 ﻿using Domain.Enum;
 using Domain.Polisy;
 using Domain.Services;
+using Domain.Services.Interfaces;
 using Hangfire;
 using Infrastructure.Helpers;
 using Microsoft.Extensions.Logging;
 using Serilog.Context;
 
+
 namespace Infrastructure.Extention;
 
 [DisableConcurrentExecution(timeoutInSeconds: 60)]
-public class TradingJob(StrategyEngine engine, DailyTradePolicy gate, ILogger<TradingJob> logger)
+public class TradingJob(
+    StrategyEngine engine,
+    DailyTradePolicy gate,
+    ILogger<TradingJob> logger,
+    IEconomicCalendarService service)
 {
-    private static long _lastCandleTimestamp;
     private static readonly List<long> OpenTradeTickets = new();
+
+    private const string TradingSymbol = "GBPUSD";
 
     public async Task RunCycle()
     {
@@ -22,7 +29,15 @@ public class TradingJob(StrategyEngine engine, DailyTradePolicy gate, ILogger<Tr
             try
             {
                 bridge.Connect();
+                await service.RefreshCalendarAsync();
+                if (service.IsInEmbargoPeriod(TradingSymbol, 30, 30))
+                {
+                    logger.LogWarning("Execution paused due to upcoming high-impact news.");
+                    return; 
+                }
+                logger.LogInformation("--- Main Cycle Started ---");
                 await CheckForClosedTrades(bridge);
+                await ManageOpenTrades(bridge);
                 await Execute(bridge);
             }
             catch (Exception ex)
@@ -36,42 +51,37 @@ public class TradingJob(StrategyEngine engine, DailyTradePolicy gate, ILogger<Tr
 
     private async Task Execute(MetaTraderPipeClient bridge)
     {
-        logger.LogInformation("--- Searching for new trade ---");
+        logger.LogInformation("--- Searching for new trade on {Symbol} ---", TradingSymbol);
         try
         {
-            var openTradesStr = bridge.SendCommand("COUNT_OPEN_TRADES,EURUSD");
+            var openTradesStr = bridge.SendCommand($"COUNT_OPEN_TRADES,{TradingSymbol}");
             if (int.Parse(openTradesStr) > 0)
             {
-                logger.LogInformation("An open trade already exists for EURUSD. Skipping.");
+                logger.LogInformation("An open trade already exists for {Symbol}. Skipping.", TradingSymbol);
                 return;
             }
 
-            var marketDataStr = bridge.SendCommand("GET_MARKET_DATA,EURUSD");
+            var marketDataStr = bridge.SendCommand($"GET_MARKET_DATA,{TradingSymbol}");
             var marketParts = marketDataStr.Split(',');
 
-            if (marketParts.Length < 108 || marketParts[0].StartsWith("ERROR"))
+            if (marketParts.Length < 9 || marketParts[0].StartsWith("ERROR"))
             {
                 logger.LogError("Could not get valid market data from MT4: {Response}", marketDataStr);
                 return;
             }
 
-            long currentCandleTimestamp = long.Parse(marketParts[0]);
-            if (currentCandleTimestamp <= _lastCandleTimestamp)
-            {
-                logger.LogInformation("Not a new candle. Skipping.");
-                return;
-            }
-
             var marketData = new MarketData
             {
-                OpenTime = currentCandleTimestamp,
-                Open = double.Parse(marketParts[1]), High = double.Parse(marketParts[2]),
-                Low = double.Parse(marketParts[3]), Close = double.Parse(marketParts[4]),
-                Ask = double.Parse(marketParts[5]), Bid = double.Parse(marketParts[6]),
-                Atr = double.Parse(marketParts[7])
+                OpenTime = long.Parse(marketParts[0]),
+                Open = double.Parse(marketParts[1]),
+                High = double.Parse(marketParts[2]),
+                Low = double.Parse(marketParts[3]),
+                Close = double.Parse(marketParts[4]),
+                Ask = double.Parse(marketParts[5]),
+                Bid = double.Parse(marketParts[6]),
+                EmaFast = double.Parse(marketParts[7]),
+                EmaSlow = double.Parse(marketParts[8])
             };
-
-            var recentCloses = marketParts.Skip(8).Select(double.Parse).ToList();
 
             var accountInfoStr = bridge.SendCommand("GET_ACCOUNT_INFO");
             var accountParts = accountInfoStr.Split(',');
@@ -79,8 +89,10 @@ public class TradingJob(StrategyEngine engine, DailyTradePolicy gate, ILogger<Tr
 
             var accountInfo = new AccountInfo
             {
-                AccountId = long.Parse(accountParts[0]), BrokerName = accountParts[1],
-                Balance = double.Parse(accountParts[2]), Equity = double.Parse(accountParts[3]),
+                AccountId = long.Parse(accountParts[0]),
+                BrokerName = accountParts[1],
+                Balance = double.Parse(accountParts[2]),
+                Equity = double.Parse(accountParts[3]),
                 FreeMargin = double.Parse(accountParts[4])
             };
 
@@ -88,10 +100,10 @@ public class TradingJob(StrategyEngine engine, DailyTradePolicy gate, ILogger<Tr
             if (!gate.CanExecuteTrade()) return;
 
             var symbolInfo = new SymbolInfo
-                {SymbolName = "EURUSD", PipSize = 0.0001, StepVolume = 0.01, Digits = 5, LotSize = 100000};
+                {SymbolName = TradingSymbol, PipSize = 0.01, StepVolume = 0.01, Digits = 2, LotSize = 1};
 
-            var decision = engine.Evaluate(accountInfo, symbolInfo, marketData, recentCloses.Take(21).ToList());
-            if (decision.Action == ActionKind.Buy || decision.Action == ActionKind.Sell)
+            var decision = engine.Evaluate(accountInfo, symbolInfo, marketData);
+            if (decision.Action is ActionKind.Buy or ActionKind.Sell)
             {
                 var command =
                     $"{decision.Action.ToString().ToUpper()},{symbolInfo.SymbolName},{decision.PositionSizeLots},{decision.StopLossPrice},{decision.TakeProfitPrice}";
@@ -107,7 +119,6 @@ public class TradingJob(StrategyEngine engine, DailyTradePolicy gate, ILogger<Tr
                     }
 
                     gate.RegisterTrade();
-                    _lastCandleTimestamp = currentCandleTimestamp;
 
                     using (LogContext.PushProperty("ops", true))
                     using (LogContext.PushProperty("EventType", "TradeOpened"))
@@ -117,7 +128,7 @@ public class TradingJob(StrategyEngine engine, DailyTradePolicy gate, ILogger<Tr
                             decision.Action.ToString(),
                             decision.PositionSizeLots,
                             symbolInfo.SymbolName,
-                            marketData.Close,
+                            decision.EntryPrice,
                             decision.StopLossPrice,
                             decision.TakeProfitPrice,
                             ticket);
@@ -133,8 +144,6 @@ public class TradingJob(StrategyEngine engine, DailyTradePolicy gate, ILogger<Tr
                 logger.LogError(ex, "An exception occurred in Execute method.");
             }
         }
-
-        await Task.CompletedTask;
     }
 
     private async Task CheckForClosedTrades(MetaTraderPipeClient bridge)
@@ -142,8 +151,7 @@ public class TradingJob(StrategyEngine engine, DailyTradePolicy gate, ILogger<Tr
         logger.LogInformation("--- Checking for closed trades ---");
         try
         {
-            var openTicketsStr = bridge.SendCommand("GET_OPEN_TICKETS,EURUSD");
-
+            var openTicketsStr = bridge.SendCommand($"GET_OPEN_TICKETS,{TradingSymbol}");
             var currentlyOpenTickets = new HashSet<long>();
             if (!string.IsNullOrEmpty(openTicketsStr) && !openTicketsStr.StartsWith("ERROR"))
             {
@@ -153,7 +161,6 @@ public class TradingJob(StrategyEngine engine, DailyTradePolicy gate, ILogger<Tr
             }
 
             var closedTickets = OpenTradeTickets.Except(currentlyOpenTickets).ToList();
-
             foreach (var ticket in closedTickets)
             {
                 logger.LogInformation("Detected closed trade with ticket: {Ticket}. Fetching info...", ticket);
@@ -162,7 +169,6 @@ public class TradingJob(StrategyEngine engine, DailyTradePolicy gate, ILogger<Tr
                 {
                     var infoParts = tradeInfoStr.Split(',');
                     var profit = double.Parse(infoParts[1]);
-
                     using (LogContext.PushProperty("ops", true))
                     using (LogContext.PushProperty("EventType", "TradeClosed"))
                     {
@@ -188,7 +194,18 @@ public class TradingJob(StrategyEngine engine, DailyTradePolicy gate, ILogger<Tr
                 logger.LogError(ex, "An error occurred while checking for closed trades.");
             }
         }
+    }
 
-        await Task.CompletedTask;
+    private async Task ManageOpenTrades(MetaTraderPipeClient bridge)
+    {
+        if (OpenTradeTickets.Count == 0) return;
+        logger.LogInformation("--- Managing {Count} open trades ---", OpenTradeTickets.Count);
+        foreach (var ticket in OpenTradeTickets.ToList())
+        {
+            var response =bridge.SendCommand($"MANAGE_TRAILING_STOP,{ticket}");
+            if (response.StartsWith("SUCCESS"))
+            { logger.LogInformation("Trailing stop for ticket {Ticket} was updated.", ticket);
+            }
+        }
     }
 }

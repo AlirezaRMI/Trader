@@ -2,12 +2,13 @@
 
 public record MarketData
 {
-    public long OpenTime { get; init; }
-    public double Open { get; init; }
-    public double High { get; init; }
-    public double Low { get; init; }
-    public double Close { get; init; }
-    public double Atr { get; init; }
-    public double Bid { get; init; }
-    public double Ask { get; init; }  
+    public long OpenTime { get; set; }
+    public double Open { get; set; }
+    public double High { get; set; }
+    public double Low { get; set; }
+    public double Close { get; set; }
+    public double Ask { get; set; }
+    public double Bid { get; set; }
+    public double EmaFast { get; set; }
+    public double EmaSlow { get; set; } 
 }

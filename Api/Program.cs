@@ -1,5 +1,6 @@
 using Domain.Polisy;
 using Domain.Services;
+using Domain.Services.Interfaces;
 using Hangfire;
 using Hangfire.MemoryStorage;
 using Infrastructure.Extention;
@@ -17,20 +18,18 @@ builder.Host.UseSerilog((ctx, cfg) =>
 
     var token = ctx.Configuration["Telegram:BotToken"];
     var chatIds = ctx.Configuration.GetSection("Telegram:ChatIds").Get<List<string>>();
-    
-    if (!string.IsNullOrWhiteSpace(token) && chatIds != null && chatIds.Count > 0)
+
+    if (string.IsNullOrWhiteSpace(token) || chatIds is not {Count: > 0}) return;
+    foreach (var chatId in chatIds)
     {
-        foreach (var chatId in chatIds)
-        {
-            cfg.WriteTo.Logger(lc => lc
-                .Filter.ByIncludingOnly(e => e.Properties.ContainsKey("ops"))
-                .WriteTo.TelegramBot(
-                    botToken: token,
-                    chatId: chatId,
-                    restrictedToMinimumLevel: LogEventLevel.Information
-                )
-            );
-        }
+        cfg.WriteTo.Logger(lc => lc
+            .Filter.ByIncludingOnly(e => e.Properties.ContainsKey("ops"))
+            .WriteTo.TelegramBot(
+                botToken: token,
+                chatId: chatId,
+                restrictedToMinimumLevel: LogEventLevel.Information
+            )
+        );
     }
 });
 
@@ -41,6 +40,7 @@ builder.Services.AddScoped<TradingJob>();
 
 builder.Services.AddHangfire(config => config.UseMemoryStorage());
 builder.Services.AddHangfireServer(options => options.WorkerCount = 1);
+builder.Services.AddSingleton<IEconomicCalendarService, EconomicCalendarService>();
 
 var app = builder.Build();
 
