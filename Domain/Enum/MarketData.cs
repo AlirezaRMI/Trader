@@ -11,4 +11,8 @@ public record MarketData
     public double Bid { get; set; }
     public double EmaFast { get; set; }
     public double EmaSlow { get; set; } 
+    public double Atr { get; set; }
+    public double AtrSma { get; set; }
+    
+    public double Adx { get; set; }
 }

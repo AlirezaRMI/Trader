@@ -1,6 +1,7 @@
-﻿//+-------------------------------------------------------------------+
-//                                                   CSharpBridgeEA.mq4 
-//+-------------------------------------------------------------------+
+﻿//+------------------------------------------------------------------+
+//|                                           CSharpBridgeEA.mq4 |
+//|                (نسخه نهایی و کامل با استراتژی Pullback)                |
+//+------------------------------------------------------------------+
 #property copyright "MY BOT"
 #property link      "WWITD.Com"
 #property strict
@@ -95,24 +96,26 @@ string ProcessRequest(string request)
 
    if(command == "GET_MARKET_DATA")
    {
-      if(separatorCount < 2) return "ERROR,Symbol not provided";
+      if(separatorCount < 3) return "ERROR,Symbol or Timeframe not provided";
       symbol = parts[1];
+      string timeframe_str = parts[2];
+      ENUM_TIMEFRAMES timeframe = StringToTimeframe(timeframe_str);
+      if(timeframe == 0) return "ERROR,Invalid Timeframe provided";
+
       RefreshRates();
-      string time = IntegerToString((int)iTime(symbol, 0, 0));  
-      string open = DoubleToString(iOpen(symbol, 0, 0), Digits());
-      string high = DoubleToString(iHigh(symbol, 0, 0), Digits());
-      string low = DoubleToString(iLow(symbol, 0, 0), Digits());
-      string close = DoubleToString(iClose(symbol, 0, 0), Digits());
+      
+      string time = IntegerToString((int)iTime(symbol, timeframe, 0));  
+      string open = DoubleToString(iOpen(symbol, timeframe, 0), Digits());
+      string high = DoubleToString(iHigh(symbol, timeframe, 0), Digits());
+      string low = DoubleToString(iLow(symbol, timeframe, 0), Digits());
+      string close = DoubleToString(iClose(symbol, timeframe, 0), Digits());
       string ask = DoubleToString(MarketInfo(symbol, MODE_ASK), Digits());
       string bid = DoubleToString(MarketInfo(symbol, MODE_BID), Digits());
-      string atr = DoubleToString(iATR(symbol, 0, 14, 0), 5);
-      string response = StringFormat("%s,%s,%s,%s,%s,%s,%s,%s", time, open, high, low, close, ask, bid, atr);
-      string historyCloses = "";
-      for(int i = 1; i <= 100; i++) 
-      { 
-         historyCloses = historyCloses + "," + DoubleToString(iClose(symbol, 0, i), Digits()); 
-      }
-      return response + historyCloses;
+      
+      string ema_fast = DoubleToString(iMA(symbol, timeframe, 15, 0, MODE_EMA, PRICE_CLOSE, 0), Digits());
+      string ema_slow = DoubleToString(iMA(symbol, timeframe, 30, 0, MODE_EMA, PRICE_CLOSE, 0), Digits());
+
+      return StringFormat("%s,%s,%s,%s,%s,%s,%s,%s,%s", time, open, high, low, close, ask, bid, ema_fast, ema_slow);
    }
    
    if(command == "COUNT_OPEN_TRADES")
@@ -123,10 +126,7 @@ string ProcessRequest(string request)
       int count = 0;
       for(int i = OrdersTotal() - 1; i >= 0; i--)
       {
-         if(OrderSelect(i, SELECT_BY_POS) && OrderSymbol() == symbol && OrderMagicNumber() == magicNumber) 
-         { 
-            count++; 
-         }
+         if(OrderSelect(i, SELECT_BY_POS) && OrderSymbol() == symbol && OrderMagicNumber() == magicNumber) { count++; }
       }
       return((string)count);
    }
@@ -145,53 +145,98 @@ string ProcessRequest(string request)
       return("ERROR,OrderSend failed with code: " + (string)GetLastError());
    }
    
-   if(command == "GET_OPEN_TICKETS")
+   if(command == "MANAGE_TRAILING_STOP")
    {
-       if(separatorCount < 2) return "ERROR,Symbol not provided";
-       symbol = parts[1];
-       RefreshRates();
-       string ticketsStr = "";
-       for(int i = OrdersTotal() - 1; i >= 0; i--)
-       {
-           if(OrderSelect(i, SELECT_BY_POS) && OrderSymbol() == symbol && OrderMagicNumber() == magicNumber)
-           {
-               if(ticketsStr != "") ticketsStr += ",";
-               ticketsStr += (string)OrderTicket();
-           }
-       }
-       return ticketsStr;
+      if(separatorCount < 2) return "ERROR,Ticket not provided";
+      ticket = (int)StringToInteger(parts[1]);
+      if(OrderSelect(ticket, SELECT_BY_TICKET))
+      {
+         double trailingStopFactor = 1.0;
+         double atr = iATR(OrderSymbol(), 0, 14, 0);
+         double stopDistance = atr * trailingStopFactor;
+         double newStopLoss = 0;
+         if(OrderType() == OP_BUY)
+         {
+            newStopLoss = MarketInfo(OrderSymbol(), MODE_BID) - stopDistance;
+            if(newStopLoss > OrderStopLoss())
+            {
+               if(OrderModify(ticket, OrderOpenPrice(), newStopLoss, OrderTakeProfit(), 0))
+                  return "SUCCESS,SL moved to " + DoubleToString(newStopLoss, Digits());
+               else
+                  return "ERROR,OrderModify failed with code: " + (string)GetLastError();
+            }
+         }
+         else if(OrderType() == OP_SELL)
+         {
+            newStopLoss = MarketInfo(OrderSymbol(), MODE_ASK) + stopDistance;
+            if(newStopLoss < OrderStopLoss() || OrderStopLoss() == 0)
+            {
+               if(OrderModify(ticket, OrderOpenPrice(), newStopLoss, OrderTakeProfit(), 0))
+                  return "SUCCESS,SL moved to " + DoubleToString(newStopLoss, Digits());
+               else
+                  return "ERROR,OrderModify failed with code: " + (string)GetLastError();
+            }
+         }
+         return "NO_CHANGE,SL not moved";
+      }
+      return "ERROR,Trade not found";
    }
 
-if(command == "GET_CLOSED_TRADE_INFO")
-{
-    if(separatorCount < 2) return "ERROR,Ticket not provided";
-    ticket = (int)StringToInteger(parts[1]);
+  if(command == "GET_OPEN_TICKETS")
+   {
+      if(separatorCount < 2) return "ERROR,Symbol not provided";
+      symbol = parts[1];
+      RefreshRates();
+      string ticketsStr = "";
+      for(int i = OrdersTotal() - 1; i >= 0; i--)
+      {
+         if(OrderSelect(i, SELECT_BY_POS) && OrderSymbol() == symbol && OrderMagicNumber() == magicNumber)
+         {
+            if(ticketsStr != "") ticketsStr += ",";
+            ticketsStr += (string)OrderTicket();
+         }
+      }
+      
+      if (ticketsStr == "")
+      {
+         return "NONE"; 
+      }
+      
+      return ticketsStr;
+   }
 
-    if(OrderSelect(ticket, SELECT_BY_TICKET, MODE_HISTORY))
-    {
-       
-       double net_profit = OrderProfit() + OrderCommission() + OrderSwap();
-       
-       string close_price_str = DoubleToString(OrderClosePrice(), Digits());
-       string net_profit_str = DoubleToString(net_profit, 2);
-       string close_time_str = TimeToString(OrderCloseTime(), TIME_DATE|TIME_SECONDS);
-       
-       return StringFormat("%s,%s,%s", close_price_str, net_profit_str, close_time_str);
-     
-    }
-    
-    return "ERROR,Trade not found in history";
-}
+   if(command == "GET_CLOSED_TRADE_INFO")
+   {
+      if(separatorCount < 2) return "ERROR,Ticket not provided";
+      ticket = (int)StringToInteger(parts[1]);
+      if(OrderSelect(ticket, SELECT_BY_TICKET, MODE_HISTORY))
+      {
+         double net_profit = OrderProfit() + OrderCommission() + OrderSwap();
+         return StringFormat("%.*f,%.2f,%s", Digits(), OrderClosePrice(), net_profit, TimeToString(OrderCloseTime(), TIME_DATE|TIME_SECONDS));
+      }
+      return "ERROR,Trade not found in history";
+   }
    
    return "ERROR,Unknown command";
+}
+
+ENUM_TIMEFRAMES StringToTimeframe(string tf_str)
+{
+    if(tf_str == "M1") return(PERIOD_M1);
+    if(tf_str == "M5") return(PERIOD_M5);
+    if(tf_str == "M15") return(PERIOD_M15);
+    if(tf_str == "M30") return(PERIOD_M30);
+    if(tf_str == "H1") return(PERIOD_H1);
+    if(tf_str == "H4") return(PERIOD_H4);
+    if(tf_str == "D1") return(PERIOD_D1);
+    if(tf_str == "W1") return(PERIOD_W1);
+    if(tf_str == "MN1") return(PERIOD_MN1);
+    return(0);
 }
 
 bool IsConnected(int h)
 {
    int error = GetLastError();
-   if(h == -1 || error == 109)
-   {
-      return false;
-   }
+   if(h == -1 || error == 109) { return false; }
    return true;
 }

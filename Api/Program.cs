@@ -34,8 +34,11 @@ builder.Host.UseSerilog((ctx, cfg) =>
 });
 
 
-builder.Services.AddSingleton<StrategyEngine>();
+builder.Services.AddScoped<IndicatorBasedEngine>();
 builder.Services.AddSingleton<DailyTradePolicy>();
+builder.Services.AddScoped<PriceActionAnalyzer>();
+builder.Services.AddScoped<PriceActionEngine>();
+builder.Services.AddScoped<MarketSupervisor>();
 builder.Services.AddScoped<TradingJob>();
 
 builder.Services.AddHangfire(config => config.UseMemoryStorage());
@@ -50,6 +53,6 @@ app.UseHangfireDashboard();
 RecurringJob.AddOrUpdate<TradingJob>(
     "main-trading-cycle", 
     job => job.RunCycle(), 
-    "*/10 * * * * *");
+    "*/1 * * * *");
 
 app.Run();
