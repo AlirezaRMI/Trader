@@ -79,7 +79,7 @@ public class IndicatorBasedEngine(ILogger<IndicatorBasedEngine> logger) : IStrat
     {
         logger.LogInformation("--- Evaluating Indicator-Based Strategy Conditions ---");
 
-        double adxThreshold = 20.0;
+        var adxThreshold = 15.0;
         if (pattern.Adx < adxThreshold)
         {
             logger.LogWarning("IndicatorEngine: Trend is too weak (ADX < {Threshold}). No trade allowed.",
