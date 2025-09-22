@@ -7,7 +7,7 @@ namespace Domain.Services;
 
 public class IndicatorBasedEngine(ILogger<IndicatorBasedEngine> logger) : IStrategyEngine
 {
-    private const double RiskPerTradeUSD = 10.0;
+    private const double RiskPerTradeUSD = 5.0;
     private const double RiskPercentage = 0.01;
 
     public TradeDecision Evaluate(AccountInfo account, SymbolDetails symbol, MarketData marketPhase,
@@ -90,13 +90,13 @@ public class IndicatorBasedEngine(ILogger<IndicatorBasedEngine> logger) : IStrat
         logger.LogInformation("IndicatorEngine: ADX Check Passed (ADX: {AdxValue} >= {Threshold})", pattern.Adx,
             adxThreshold);
 
-        bool isPhaseUpTrend = phase.Close > phase.EmaSlow;
-        bool isPatternUpTrend = pattern.Close > pattern.EmaSlow;
+        var isPhaseUpTrend = phase.Close > phase.EmaSlow;
+        var isPatternUpTrend = pattern.Close > pattern.EmaSlow;
         logger.LogInformation("IndicatorEngine: Phase (H1) Trend: IsUpTrend = {IsUpTrend}", isPhaseUpTrend);
         logger.LogInformation("IndicatorEngine: Pattern (M15) Trend: IsUpTrend = {IsUpTrend}", isPatternUpTrend);
 
-        double atrMultiplier = 1.5;
-        bool isVolatile = entry.Atr > (entry.AtrSma * atrMultiplier);
+        var atrMultiplier = 1.5;
+        var isVolatile = entry.Atr > (entry.AtrSma * atrMultiplier);
         logger.LogInformation(
             "IndicatorEngine: Volatility Check (M5): Is Volatile = {IsVolatile} (ATR: {Atr}, Threshold: {Threshold})",
             isVolatile, entry.Atr, entry.AtrSma * atrMultiplier);
