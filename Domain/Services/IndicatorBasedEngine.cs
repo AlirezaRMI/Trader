@@ -7,7 +7,7 @@ namespace Domain.Services;
 
 public class IndicatorBasedEngine(ILogger<IndicatorBasedEngine> logger) : IStrategyEngine
 {
-    private const double RiskPerTradeUSD = 5.0;
+    private const double RiskPerTradeUsd = 5.0;
     private const double RiskPercentage = 0.01;
 
     public TradeDecision Evaluate(AccountInfo account, SymbolDetails symbol, MarketData marketPhase,
@@ -51,7 +51,7 @@ public class IndicatorBasedEngine(ILogger<IndicatorBasedEngine> logger) : IStrat
             return new TradeDecision {Note = "Invalid StopLoss distance."};
         }
 
-        double riskAmount = Math.Min(account.Equity * RiskPercentage, RiskPerTradeUSD);
+        double riskAmount = Math.Min(account.Equity * RiskPercentage, RiskPerTradeUsd);
         double positionSizeLots = riskAmount / (stopLossPips * pipValuePerLot);
         positionSizeLots = Math.Round(positionSizeLots / symbol.StepVolume) * symbol.StepVolume;
 

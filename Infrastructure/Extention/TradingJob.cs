@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Serilog.Context;
 using System.Globalization;
 
-
 namespace Infrastructure.Extention;
 
 [DisableConcurrentExecution(timeoutInSeconds: 60)]
