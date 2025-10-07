@@ -40,6 +40,7 @@ public class IndicatorBasedEngine(ILogger<IndicatorBasedEngine> logger) : IStrat
         {
             stopLossPrice = marketEntry.High + stopLossDistance;
         }
+
         double pipValuePerLot = CalculatePipValuePerLot(symbol);
         logger.LogInformation("IndicatorEngine: Calculated Pip Value per Lot for {Symbol}: {PipValue:C}",
             symbol.SymbolName, pipValuePerLot);
@@ -79,7 +80,7 @@ public class IndicatorBasedEngine(ILogger<IndicatorBasedEngine> logger) : IStrat
     {
         logger.LogInformation("--- Evaluating Indicator-Based Strategy Conditions ---");
 
-        var adxThreshold = 15.0;
+        var adxThreshold = 20.0;
         if (pattern.Adx < adxThreshold)
         {
             logger.LogWarning("IndicatorEngine: Trend is too weak (ADX < {Threshold}). No trade allowed.",
@@ -96,17 +97,19 @@ public class IndicatorBasedEngine(ILogger<IndicatorBasedEngine> logger) : IStrat
         logger.LogInformation("IndicatorEngine: Pattern (M15) Trend: IsUpTrend = {IsUpTrend}", isPatternUpTrend);
 
         var atrMultiplier = 1.5;
-        var isVolatile = entry.Atr > (entry.AtrSma * atrMultiplier);
-        logger.LogInformation(
-            "IndicatorEngine: Volatility Check (M5): Is Volatile = {IsVolatile} (ATR: {Atr}, Threshold: {Threshold})",
-            isVolatile, entry.Atr, entry.AtrSma * atrMultiplier);
+        var isVolatileByAtr = entry.Atr > (entry.AtrSma * atrMultiplier);
+
+        var explosiveTrendAdx = 50.0;
+        var isExplosiveByAdx = pattern.Adx > explosiveTrendAdx;
 
         bool entryBuyTrigger;
         bool entrySellTrigger;
 
-        if (isVolatile)
+        if (isExplosiveByAdx || isVolatileByAtr)
         {
-            logger.LogInformation("IndicatorEngine: Entry Mode: Momentum (Aggressive)");
+            logger.LogInformation(
+                "IndicatorEngine: Entry Mode: Momentum (Aggressive). Triggered by ADX > {AdxExplosive} or ATR Spike.",
+                explosiveTrendAdx);
             entryBuyTrigger = entry.Close > entry.Open;
             entrySellTrigger = entry.Close < entry.Open;
         }

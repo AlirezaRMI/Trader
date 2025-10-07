@@ -17,7 +17,7 @@ public sealed class MetaTraderPipeClient(ILogger logger) : IDisposable
         logger.LogInformation("C#: Connection established.");
     }
 
-    public string SendCommand(string command)
+    public async Task<string> SendCommandAsync(string command)
     {
         if (!_pipeClient.IsConnected)
         {
@@ -27,42 +27,45 @@ public sealed class MetaTraderPipeClient(ILogger logger) : IDisposable
         try
         {
             var requestBytes = Encoding.UTF8.GetBytes(command);
-
             _pipeClient.Write(requestBytes, 0, requestBytes.Length);
-            _pipeClient.WaitForPipeDrain();
+            await _pipeClient.FlushAsync();
             logger.LogInformation("C#: Sent command: '{Command}'", command);
             
             var responseBytes = new byte[4096];
-            var streamReader = new StreamReader(_pipeClient);
-            var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-            var readTask = streamReader.BaseStream.ReadAsync(responseBytes, 0, responseBytes.Length, cancellationTokenSource.Token);
-
-            readTask.Wait(cancellationTokenSource.Token); 
-
-            if (readTask.IsCompletedSuccessfully)
+            var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+            var bytesRead = await _pipeClient.ReadAsync(responseBytes, 0, responseBytes.Length, cancellationTokenSource.Token);
+            
+            if (bytesRead > 0)
             {
-                var bytesRead = readTask.Result;
-                var response = Encoding.UTF8.GetString(responseBytes, 0, bytesRead);
+                var response = Encoding.UTF8.GetString(responseBytes, 0, bytesRead).TrimEnd('\0');
                 logger.LogInformation("C#: Received response: '{Response}'", response);
                 return response;
             }
             else
             {
-                logger.LogError("C#: Timeout! No response received from MT4 in 10 seconds.");
-                return "ERROR,Timeout";
+                logger.LogError("C#: No bytes read from MT4 (possible disconnect).");
+                return "ERROR,NoResponse";
             }
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogError("C#: Timeout! No response from MT4 in 15 seconds.");
+            return "ERROR,Timeout";
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "C#: An error occurred during SendCommand.");
             if (!_pipeClient.IsConnected)
             {
-                 logger.LogWarning("Pipe seems to be broken. Disposing client for next run.");
-                 Dispose();
+                logger.LogWarning("Pipe seems broken. Disposing for next run.");
+                Dispose();
             }
             return $"ERROR,{ex.Message}";
         }
     }
+
+    [Obsolete("Use SendCommandAsync instead")]
+    public string SendCommand(string command) => SendCommandAsync(command).GetAwaiter().GetResult();
 
     public void Dispose()
     {

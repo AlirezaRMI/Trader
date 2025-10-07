@@ -1,6 +1,6 @@
 ﻿//+------------------------------------------------------------------+
 //|                                           CSharpBridgeEA.mq4 |
-//|                (نسخه نهایی و کامل با استراتژی Pullback)                |
+//|                     (نسخه نهایی با تمام قابلیت‌ها)                     |
 //+------------------------------------------------------------------+
 #property copyright "MY BOT"
 #property link      "WWITD.Com"
@@ -50,28 +50,37 @@ void OnTimer()
 {
    if(ConnectNamedPipe(hPipe, 0) || GetLastError() == 535)
    {
-      while(IsConnected(hPipe))
+      while(true)
       {
          uchar requestBuffer[4096];
-         int bytesRead[1];
-         if(ReadFile(hPipe, requestBuffer, 4096, bytesRead, 0) && bytesRead[0] > 0)
+         int bytesRead[1] = {0};
+         bool readSuccess = ReadFile(hPipe, requestBuffer, 4096, bytesRead, 0);
+         
+         if (!readSuccess || bytesRead[0] <= 0)
          {
-            string requestStr = CharArrayToString(requestBuffer, 0, bytesRead[0]);
-            Print("MT4: Received: '", requestStr, "'");
-            string responseStr = ProcessRequest(requestStr);
-            Print("MT4: Responded: '", responseStr, "'");
-            uchar responseBuffer[];
-            StringToCharArray(responseStr, responseBuffer);
-            int bytesWritten[1];
-            if(WriteFile(hPipe, responseBuffer, StringLen(responseStr), bytesWritten, 0))
-            {
-               FlushFileBuffers(hPipe);
-            }
+            Print("MT4: Read failed or no bytes (", bytesRead[0], "). Disconnecting.");
+            break;
+         }
+         
+         string requestStr = CharArrayToString(requestBuffer, 0, bytesRead[0]);
+         Print("MT4: Received: '", requestStr, "'");
+         string responseStr = ProcessRequest(requestStr);
+         Print("MT4: Responded: '", responseStr, "'");
+         
+         uchar responseBuffer[];
+         StringToCharArray(responseStr + "\0", responseBuffer);
+         int bytesWritten[1] = {0};
+         if(WriteFile(hPipe, responseBuffer, ArraySize(responseBuffer), bytesWritten, 0))
+         {
+            FlushFileBuffers(hPipe);
          }
          else
          {
+            Print("MT4: Write failed. Disconnecting.");
             break;
          }
+         
+         Sleep(50);
       }
       DisconnectNamedPipe(hPipe);
    }
@@ -93,6 +102,30 @@ string ProcessRequest(string request)
    {
       return StringFormat("%d,%s,%.2f,%.2f,%.2f", AccountInfoInteger(ACCOUNT_LOGIN), AccountInfoString(ACCOUNT_COMPANY), AccountInfoDouble(ACCOUNT_BALANCE), AccountInfoDouble(ACCOUNT_EQUITY), AccountFreeMargin());
    }
+   
+   if(command == "GET_HISTORY_DATA")
+   {
+      if(separatorCount < 4) return "ERROR,Params not provided";
+      symbol = parts[1];
+      ENUM_TIMEFRAMES timeframe = StringToTimeframe(parts[2]);
+      int count = (int)StringToInteger(parts[3]);
+      
+      string result = "";
+      int start = iHighest(symbol, timeframe, MODE_HIGH, count, 0);
+      
+      for(int i = 0; i < count; i++)
+      {
+         string candle_data = StringFormat("%.5f,%.5f,%.5f,%.5f,%d",
+                                           iOpen(symbol, timeframe, i),
+                                           iHigh(symbol, timeframe, i),
+                                           iLow(symbol, timeframe, i),
+                                           iClose(symbol, timeframe, i),
+                                           (long)iTime(symbol, timeframe, i));
+         if(result != "") result += ";";
+         result += candle_data;
+      }
+      return result;
+   }
 
    if(command == "GET_MARKET_DATA")
    {
@@ -103,7 +136,7 @@ string ProcessRequest(string request)
       if(timeframe == 0) return "ERROR,Invalid Timeframe provided";
 
       RefreshRates();
-      
+       
       string time = IntegerToString((int)iTime(symbol, timeframe, 0));  
       string open = DoubleToString(iOpen(symbol, timeframe, 0), Digits());
       string high = DoubleToString(iHigh(symbol, timeframe, 0), Digits());
@@ -111,18 +144,70 @@ string ProcessRequest(string request)
       string close = DoubleToString(iClose(symbol, timeframe, 0), Digits());
       string ask = DoubleToString(MarketInfo(symbol, MODE_ASK), Digits());
       string bid = DoubleToString(MarketInfo(symbol, MODE_BID), Digits());
-      
+       
       string ema_fast = DoubleToString(iMA(symbol, timeframe, 15, 0, MODE_EMA, PRICE_CLOSE, 0), Digits());
       string ema_slow = DoubleToString(iMA(symbol, timeframe, 30, 0, MODE_EMA, PRICE_CLOSE, 0), Digits());
+       
+      double atr_current = iATR(symbol, timeframe, 14, 0);
+      double atr_values[20];
+      for(int i = 0; i < 20; i++)
+      {
+         atr_values[i] = iATR(symbol, timeframe, 14, i);
+      }
+      double atr_sma = iMAOnArray(atr_values, 20, 20, 0, MODE_SMA, 0);
 
-      return StringFormat("%s,%s,%s,%s,%s,%s,%s,%s,%s", time, open, high, low, close, ask, bid, ema_fast, ema_slow);
+      string atr_str = DoubleToString(atr_current, Digits()+2);
+      string atr_sma_str = DoubleToString(atr_sma, Digits()+2);
+      
+      double adx_value = iADX(symbol, timeframe, 9, PRICE_CLOSE, MODE_MAIN, 0);
+      string adx_str = DoubleToString(adx_value, 2);
+     
+      return StringFormat("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", 
+                          time, open, high, low, close, ask, bid, 
+                          ema_fast, ema_slow, atr_str, atr_sma_str, adx_str);
+   }
+   
+   if(command == "GET_SYMBOL_INFO")
+   {
+      if(separatorCount < 2) return "ERROR,Symbol not provided";
+      symbol = parts[1];
+
+      double lot_size = SymbolInfoDouble(symbol, SYMBOL_TRADE_CONTRACT_SIZE);
+      string account_currency = AccountInfoString(ACCOUNT_CURRENCY);
+      string quote_currency = SymbolInfoString(symbol, SYMBOL_CURRENCY_PROFIT);
+      int digits = (int)SymbolInfoInteger(symbol, SYMBOL_DIGITS);
+      double step_volume = SymbolInfoDouble(symbol, SYMBOL_VOLUME_STEP);
+
+      double pip_size = (digits == 3 || digits == 5) ? 0.0001 : 0.01;
+      if (StringFind(symbol, "JPY") >= 0) pip_size = 0.01;
+
+      double quote_to_account_rate = 1.0;
+      if(quote_currency != account_currency)
+      {
+          string conv_pair1 = quote_currency + account_currency;
+          string conv_pair2 = account_currency + quote_currency;
+          RefreshRates();
+          if(MarketInfo(conv_pair1, MODE_BID) > 0)
+          {
+              quote_to_account_rate = 1.0 / MarketInfo(conv_pair1, MODE_ASK);
+          }
+          else if(MarketInfo(conv_pair2, MODE_BID) > 0)
+          {
+              quote_to_account_rate = MarketInfo(conv_pair2, MODE_ASK);
+          }
+          else
+          {
+              return "ERROR,Cannot find conversion rate for " + quote_currency;
+          }
+      }
+
+      return StringFormat("%.2f,%s,%s,%.5f,%.2f,%.5f", lot_size, account_currency, quote_currency, pip_size, step_volume, quote_to_account_rate);
    }
    
    if(command == "COUNT_OPEN_TRADES")
    {
       if(separatorCount < 2) return "ERROR,Symbol not provided";
       symbol = parts[1];
-      RefreshRates();
       int count = 0;
       for(int i = OrdersTotal() - 1; i >= 0; i--)
       {
@@ -143,6 +228,10 @@ string ProcessRequest(string request)
       int ticketNum = OrderSend(symbol, op_type, lots, price, 3, sl, tp, "C# Bot", magicNumber, 0, clrNONE);
       if(ticketNum > 0) return("SUCCESS," + (string)ticketNum);
       return("ERROR,OrderSend failed with code: " + (string)GetLastError());
+   }
+   if(command == "GET_CHART_SYMBOL")
+   {
+      return (_Symbol);
    }
    
    if(command == "MANAGE_TRAILING_STOP")
@@ -182,11 +271,10 @@ string ProcessRequest(string request)
       return "ERROR,Trade not found";
    }
 
-  if(command == "GET_OPEN_TICKETS")
+   if(command == "GET_OPEN_TICKETS")
    {
       if(separatorCount < 2) return "ERROR,Symbol not provided";
       symbol = parts[1];
-      RefreshRates();
       string ticketsStr = "";
       for(int i = OrdersTotal() - 1; i >= 0; i--)
       {
@@ -196,23 +284,23 @@ string ProcessRequest(string request)
             ticketsStr += (string)OrderTicket();
          }
       }
-      
-      if (ticketsStr == "")
-      {
-         return "NONE"; 
-      }
-      
-      return ticketsStr;
+      return (ticketsStr == "") ? "NONE" : ticketsStr;
    }
 
    if(command == "GET_CLOSED_TRADE_INFO")
    {
       if(separatorCount < 2) return "ERROR,Ticket not provided";
       ticket = (int)StringToInteger(parts[1]);
+      
       if(OrderSelect(ticket, SELECT_BY_TICKET, MODE_HISTORY))
       {
-         double net_profit = OrderProfit() + OrderCommission() + OrderSwap();
-         return StringFormat("%.*f,%.2f,%s", Digits(), OrderClosePrice(), net_profit, TimeToString(OrderCloseTime(), TIME_DATE|TIME_SECONDS));
+          double net_profit = OrderProfit() + OrderCommission() + OrderSwap();
+          
+          string close_price_str = DoubleToString(OrderClosePrice(), Digits());
+          string net_profit_str = StringFormat("%.2f", net_profit);
+          string close_time_str = TimeToString(OrderCloseTime(), TIME_DATE|TIME_SECONDS);
+          
+          return StringFormat("%s,%s,%s", close_price_str, net_profit_str, close_time_str);
       }
       return "ERROR,Trade not found in history";
    }
@@ -234,9 +322,8 @@ ENUM_TIMEFRAMES StringToTimeframe(string tf_str)
     return(0);
 }
 
-bool IsConnected(int h)
+// <-- CHANGE: Renamed function to avoid conflict
+bool IsPipeConnected()
 {
-   int error = GetLastError();
-   if(h == -1 || error == 109) { return false; }
-   return true;
+   return hPipe != -1 && GetLastError() != 109;
 }

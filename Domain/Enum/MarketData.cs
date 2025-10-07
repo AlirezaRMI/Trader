@@ -13,6 +13,5 @@ public record MarketData
     public double EmaSlow { get; set; } 
     public double Atr { get; set; }
     public double AtrSma { get; set; }
-    
     public double Adx { get; set; }
 }

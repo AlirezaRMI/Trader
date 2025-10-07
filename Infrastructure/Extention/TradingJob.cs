@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Serilog.Context;
 using System.Globalization;
 
+
 namespace Infrastructure.Extention;
 
 [DisableConcurrentExecution(timeoutInSeconds: 60)]
@@ -20,11 +21,14 @@ public class TradingJob(
 {
     private static readonly List<long> OpenTradeTickets = new();
     private static readonly Dictionary<string, long> LastTradeSignalTimes = new(); 
+    private static readonly Dictionary<string, (List<MarketData> History, DateTime FetchedAt)> HistoryCache = new();  
     
     private const string PhaseTimeframe = "H1";
     private const string PatternTimeframe = "M15";
     private const string EntryTimeframe = "M5";
     private const int HistoryCandleCount = 500;
+    private const double ZoneMergeThreshold = 0.001;
+    private static readonly TimeSpan HistoryCacheExpiry = TimeSpan.FromMinutes(5);
 
     public async Task RunCycle()
     {
@@ -35,7 +39,7 @@ public class TradingJob(
             {
                 bridge.Connect();
                 
-                string tradingSymbol = bridge.SendCommand("GET_CHART_SYMBOL");
+                string tradingSymbol = await bridge.SendCommandAsync("GET_CHART_SYMBOL");
                 if (string.IsNullOrEmpty(tradingSymbol) || tradingSymbol.StartsWith("ERROR"))
                 {
                     logger.LogError("Could not get the active chart symbol from MT4. Response: {Response}", tradingSymbol);
@@ -57,7 +61,11 @@ public class TradingJob(
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "A critical error occurred in the main trading cycle.");
+                using (LogContext.PushProperty("ops", true))
+                using (LogContext.PushProperty("EventType", "Error"))
+                {
+                    logger.LogError(ex, "A critical error occurred in the main trading cycle.");
+                }
             }
         }
         logger.LogInformation("--- Main Cycle Finished ---");
@@ -68,7 +76,7 @@ public class TradingJob(
         logger.LogInformation("--- Searching for new trade on {Symbol} ---", tradingSymbol);
         try
         {
-            var openTradesStr = bridge.SendCommand($"COUNT_OPEN_TRADES,{tradingSymbol}");
+            var openTradesStr = await bridge.SendCommandAsync($"COUNT_OPEN_TRADES,{tradingSymbol}");
             if (int.Parse(openTradesStr) > 0)
             {
                 logger.LogInformation("An open trade already exists for {Symbol}. Skipping.", tradingSymbol);
@@ -84,145 +92,222 @@ public class TradingJob(
             
             var accountInfo = await GetAccountInfo(bridge);
             if (accountInfo == null) return;
-
-            if (accountInfo.FreeMargin < 1000) return;
-            if (!gate.CanExecuteTrade()) return;
-
+            
             var symbolDetails = await GetSymbolDetails(bridge, tradingSymbol);
             if (symbolDetails == null) return;
             
-            var historicalCandles = await GetHistoryData(bridge, tradingSymbol, PatternTimeframe, HistoryCandleCount);
-            var zones = analyzer.DetectZones(historicalCandles, symbolDetails.PipSize * 15);
-            IStrategyEngine chosenEngine = supervisor.SelectStrategy(marketDataPattern, zones);
-            
-            LastTradeSignalTimes.TryGetValue(tradingSymbol, out var lastTradeTime);
-            var decision = chosenEngine.Evaluate(accountInfo, symbolDetails, marketDataPhase, marketDataPattern, marketDataEntry, lastTradeTime, zones, historicalCandles);
-            
-            if (decision.Action is ActionKind.Buy or ActionKind.Sell)
+            var history = await GetHistoryDataCached(bridge, tradingSymbol, EntryTimeframe, HistoryCandleCount);
+            if (history.Count < 2) 
             {
-                var command = $"{decision.Action.ToString().ToUpper()},{symbolDetails.SymbolName},{decision.PositionSizeLots},{decision.StopLossPrice},{decision.TakeProfitPrice}";
-                var response = bridge.SendCommand(command);
-                if (response.StartsWith("SUCCESS"))
+                logger.LogWarning("Not enough history data for {Symbol}. Skipping.", tradingSymbol);
+                return;
+            }
+            
+            var lastTradeSignalTime = LastTradeSignalTimes.TryGetValue(tradingSymbol, out var time) ? time : 0L;
+            
+            var zones = await GetZones(bridge, tradingSymbol, history);
+            
+            var engine = supervisor.SelectStrategy(marketDataPattern, zones);
+            
+            var decision = engine.Evaluate(accountInfo, symbolDetails, marketDataPhase, marketDataPattern, marketDataEntry, lastTradeSignalTime, zones, history);
+            
+            if (decision.Action == ActionKind.Hold)
+            {
+                logger.LogInformation("No trade signal for {Symbol}.", tradingSymbol);
+                return;
+            }
+            
+            decision = decision with { EntryPrice = decision.Action == ActionKind.Buy ? marketDataEntry.Ask : marketDataEntry.Bid };
+            
+            if (!gate.IsAllowed(decision.Action, accountInfo.Equity))
+            {
+                logger.LogWarning("Daily policy gate blocked trade for {Symbol}.", tradingSymbol);
+                return;
+            }
+            
+            gate.RegisterTrade(decision.Action);
+            
+            var maxRetries = 2;
+            string tradeResponse = null;
+            for (int retry = 0; retry < maxRetries; retry++)
+            {
+                var command = decision.Action == ActionKind.Buy 
+                    ? $"BUY,{tradingSymbol},{decision.PositionSizeLots:F2},{decision.StopLossPrice:F5},{decision.TakeProfitPrice:F5}" 
+                    : $"SELL,{tradingSymbol},{decision.PositionSizeLots:F2},{decision.StopLossPrice:F5},{decision.TakeProfitPrice:F5}";
+                
+                tradeResponse = await bridge.SendCommandAsync(command);
+                logger.LogDebug("Trade command sent: {Command}, Response: {Response}", command, tradeResponse);
+                
+                if (IsValidTradeResponse(tradeResponse))
                 {
+                    if (!tradeResponse.StartsWith("ERROR")) break;
+                }
+                else
+                {
+                    logger.LogWarning("Invalid trade response (looks like history data): {Response}", tradeResponse);
+                    tradeResponse = "ERROR,InvalidResponse";
+                }
+                
+                logger.LogWarning("Trade retry {Retry}/{MaxRetries} failed for {Symbol}: {Response}", retry + 1, maxRetries, tradingSymbol, tradeResponse);
+                await Task.Delay(2000 * (retry + 1));
+            }
+            
+            if (tradeResponse.StartsWith("SUCCESS"))
+            {
+                var parts = tradeResponse.Split(',');
+                if (parts.Length > 1 && long.TryParse(parts[1], out var ticketId))
+                {
+                    OpenTradeTickets.Add(ticketId);
                     LastTradeSignalTimes[tradingSymbol] = marketDataEntry.OpenTime;
-                    var ticket = long.Parse(response.Split(',')[1]);
-                    if (!OpenTradeTickets.Contains(ticket)) OpenTradeTickets.Add(ticket);
-                    gate.RegisterTrade();
                     
                     using (LogContext.PushProperty("ops", true))
                     using (LogContext.PushProperty("EventType", "TradeOpened"))
+                    using (LogContext.PushProperty("Side", decision.Action.ToString()))
+                    using (LogContext.PushProperty("Lots", decision.PositionSizeLots))
+                    using (LogContext.PushProperty("Symbol", tradingSymbol))
+                    using (LogContext.PushProperty("Ticket", ticketId))
+                    using (LogContext.PushProperty("EntryPrice", decision.EntryPrice))
+                    using (LogContext.PushProperty("StopLoss", decision.StopLossPrice))
+                    using (LogContext.PushProperty("TakeProfit", decision.TakeProfitPrice))
                     {
-                        logger.LogInformation(
-                            "Trade opened. Side: {Side}, Lots: {Lots}, Symbol: {Symbol}, EntryPrice: {EntryPrice}, StopLoss: {StopLoss}, TakeProfit: {TakeProfit}, Ticket: {Ticket}",
-                            decision.Action.ToString(),
-                            decision.PositionSizeLots,
-                            symbolDetails.SymbolName,
-                            decision.EntryPrice,
-                            decision.StopLossPrice,
-                            decision.TakeProfitPrice,
-                            ticket);
+                        logger.LogInformation("Trade opened successfully for {Symbol}. Ticket: {Ticket}", tradingSymbol, ticketId);
                     }
                 }
+                else
+                {
+                    logger.LogError("SUCCESS response but invalid ticket: {Response}", tradeResponse);
+                }
+            }
+            else
+            {
+                logger.LogError("All trade retries failed for {Symbol}: {Response}", tradingSymbol, tradeResponse);
             }
         }
         catch (Exception ex)
         {
-            using (LogContext.PushProperty("ops", true))
-            using (LogContext.PushProperty("EventType", "Error"))
-            {
-                logger.LogError(ex, "An exception occurred in Execute method.");
-            }
+            logger.LogError(ex, "Error in Execute for {Symbol}", tradingSymbol);
         }
     }
 
-    private async Task<MarketData?> GetMarketDataForTimeframe(MetaTraderPipeClient bridge, string symbol, string timeframe)
+    private bool IsValidTradeResponse(string response)
     {
-        var command = $"GET_MARKET_DATA,{symbol},{timeframe}";
-        var marketDataStr = bridge.SendCommand(command);
-        var marketParts = marketDataStr.Split(',');
-        if (marketParts.Length < 12 || marketParts[0].StartsWith("ERROR"))
+        if (string.IsNullOrEmpty(response)) return false;
+        var trimmed = response.Trim();
+        return trimmed.StartsWith("SUCCESS,") || trimmed.StartsWith("ERROR,") || trimmed.StartsWith("NO_CHANGE,");
+    }
+
+    private async Task<List<MarketData>> GetHistoryDataCached(MetaTraderPipeClient bridge, string symbol, string tf, int count)
+    {
+        var cacheKey = $"{symbol}_{tf}";
+        if (HistoryCache.TryGetValue(cacheKey, out var cached) && DateTime.UtcNow - cached.FetchedAt < HistoryCacheExpiry)
         {
-            logger.LogError("Could not get valid market data for {Timeframe} from MT4: {Response}", timeframe, marketDataStr);
+            logger.LogDebug("Using cached history for {Symbol}/{TF}", symbol, tf);
+            return cached.History;
+        }
+
+        var history = await GetHistoryData(bridge, symbol, tf, count);
+        HistoryCache[cacheKey] = (history, DateTime.UtcNow);
+        return history;
+    }
+
+    private async Task<MarketData?> GetMarketDataForTimeframe(MetaTraderPipeClient bridge, string symbol, string tf)
+    {
+        var response = await bridge.SendCommandAsync($"GET_MARKET_DATA,{symbol},{tf}");
+        if (response.StartsWith("ERROR")) 
+        {
+            logger.LogError("Failed to get market data for {Symbol}/{TF}: {Response}", symbol, tf, response);
             return null;
         }
+        var parts = response.Split(',');
+        if (parts.Length < 12) return null;
         return new MarketData
         {
-            OpenTime = long.Parse(marketParts[0]),
-            Open = double.Parse(marketParts[1], CultureInfo.InvariantCulture),
-            High = double.Parse(marketParts[2], CultureInfo.InvariantCulture),
-            Low = double.Parse(marketParts[3], CultureInfo.InvariantCulture),
-            Close = double.Parse(marketParts[4], CultureInfo.InvariantCulture),
-            Ask = double.Parse(marketParts[5], CultureInfo.InvariantCulture),
-            Bid = double.Parse(marketParts[6], CultureInfo.InvariantCulture),
-            EmaFast = double.Parse(marketParts[7], CultureInfo.InvariantCulture),
-            EmaSlow = double.Parse(marketParts[8], CultureInfo.InvariantCulture),
-            Atr = double.Parse(marketParts[9], CultureInfo.InvariantCulture),
-            AtrSma = double.Parse(marketParts[10], CultureInfo.InvariantCulture),
-            Adx = double.Parse(marketParts[11], CultureInfo.InvariantCulture)
+            OpenTime = long.Parse(parts[0], CultureInfo.InvariantCulture),
+            Open = double.Parse(parts[1], CultureInfo.InvariantCulture),
+            High = double.Parse(parts[2], CultureInfo.InvariantCulture),
+            Low = double.Parse(parts[3], CultureInfo.InvariantCulture),
+            Close = double.Parse(parts[4], CultureInfo.InvariantCulture),
+            Ask = double.Parse(parts[5], CultureInfo.InvariantCulture),
+            Bid = double.Parse(parts[6], CultureInfo.InvariantCulture),
+            EmaFast = double.Parse(parts[7], CultureInfo.InvariantCulture),
+            EmaSlow = double.Parse(parts[8], CultureInfo.InvariantCulture),
+            Atr = double.Parse(parts[9], CultureInfo.InvariantCulture),
+            AtrSma = double.Parse(parts[10], CultureInfo.InvariantCulture),
+            Adx = double.Parse(parts[11], CultureInfo.InvariantCulture)
         };
-    }
-    
-    private async Task<List<MarketData>> GetHistoryData(MetaTraderPipeClient bridge, string symbol, string timeframe, int count)
-    {
-        var command = $"GET_HISTORY_DATA,{symbol},{timeframe},{count}";
-        var response = bridge.SendCommand(command);
-        var candles = new List<MarketData>();
-        if (response.StartsWith("ERROR") || string.IsNullOrEmpty(response))
-        {
-            logger.LogError("Could not get historical data: {Response}", response);
-            return candles;
-        }
-        var candleStrings = response.Split(';');
-        foreach (var candleStr in candleStrings)
-        {
-            var parts = candleStr.Split(',');
-            if (parts.Length < 5) continue;
-            candles.Add(new MarketData
-            {
-                Open = double.Parse(parts[0], CultureInfo.InvariantCulture),
-                High = double.Parse(parts[1], CultureInfo.InvariantCulture),
-                Low = double.Parse(parts[2], CultureInfo.InvariantCulture),
-                Close = double.Parse(parts[3], CultureInfo.InvariantCulture),
-                OpenTime = long.Parse(parts[4])
-            });
-        }
-        return candles;
     }
 
     private async Task<AccountInfo?> GetAccountInfo(MetaTraderPipeClient bridge)
     {
-        var accountInfoStr = bridge.SendCommand("GET_ACCOUNT_INFO");
-        var accountParts = accountInfoStr.Split(',');
-        if (accountParts.Length < 5 || accountParts[0].StartsWith("ERROR")) return null;
+        var response = await bridge.SendCommandAsync("GET_ACCOUNT_INFO");
+        if (response.StartsWith("ERROR")) return null;
+        var parts = response.Split(',');
+        if (parts.Length < 5) return null;
         return new AccountInfo
         {
-            AccountId = long.Parse(accountParts[0]),
-            BrokerName = accountParts[1],
-            Balance = double.Parse(accountParts[2], CultureInfo.InvariantCulture),
-            Equity = double.Parse(accountParts[3], CultureInfo.InvariantCulture),
-            FreeMargin = double.Parse(accountParts[4], CultureInfo.InvariantCulture)
+            AccountId = long.Parse(parts[0], CultureInfo.InvariantCulture),
+            BrokerName = parts[1],
+            Balance = double.Parse(parts[2], CultureInfo.InvariantCulture),
+            Equity = double.Parse(parts[3], CultureInfo.InvariantCulture),
+            FreeMargin = double.Parse(parts[4], CultureInfo.InvariantCulture)
         };
     }
 
     private async Task<SymbolDetails?> GetSymbolDetails(MetaTraderPipeClient bridge, string symbol)
     {
-        var symbolInfoStr = bridge.SendCommand($"GET_SYMBOL_INFO,{symbol}");
-        if (symbolInfoStr.StartsWith("ERROR"))
+        var response = await bridge.SendCommandAsync($"GET_SYMBOL_INFO,{symbol}");
+        if (response.StartsWith("ERROR")) return null;
+        var parts = response.Split(',');
+        if (parts.Length < 6) return null;
+        var details = new SymbolDetails();
+        details.SymbolName = symbol;
+        details.LotSize = double.Parse(parts[0], CultureInfo.InvariantCulture);
+        details.AccountCurrency = parts[1];
+        details.QuoteCurrency = parts[2];
+        details.PipSize = double.Parse(parts[3], CultureInfo.InvariantCulture);
+        details.StepVolume = double.Parse(parts[4], CultureInfo.InvariantCulture);
+        details.QuoteToAccountRate = double.Parse(parts[5], CultureInfo.InvariantCulture);
+        return details;
+    }
+
+    private async Task<List<MarketData>> GetHistoryData(MetaTraderPipeClient bridge, string symbol, string tf, int count)
+    {
+        var response = await bridge.SendCommandAsync($"GET_HISTORY_DATA,{symbol},{tf},{count}");
+        logger.LogDebug("History response for {Symbol}: {Response}", symbol, response);
+        var history = new List<MarketData>();
+        if (response.StartsWith("ERROR")) return history;
+        var candles = response.Split(';');
+        foreach (var candleStr in candles)
         {
-            logger.LogError("Could not get symbol info: {Response}", symbolInfoStr);
-            return null;
+            if (string.IsNullOrWhiteSpace(candleStr)) continue;
+            var parts = candleStr.Split(',');
+            if (parts.Length >= 5)
+            {
+                history.Add(new MarketData
+                {
+                    OpenTime = long.Parse(parts[4], CultureInfo.InvariantCulture),
+                    Open = double.Parse(parts[0], CultureInfo.InvariantCulture),
+                    High = double.Parse(parts[1], CultureInfo.InvariantCulture),
+                    Low = double.Parse(parts[2], CultureInfo.InvariantCulture),
+                    Close = double.Parse(parts[3], CultureInfo.InvariantCulture),
+                    Ask = 0,
+                    Bid = 0,
+                    EmaFast = 0,
+                    EmaSlow = 0,
+                    Atr = 0,
+                    AtrSma = 0,
+                    Adx = 0
+                });
+            }
         }
-        var symbolParts = symbolInfoStr.Split(',');
-        return new SymbolDetails
-        {
-            SymbolName = symbol,
-            LotSize = double.Parse(symbolParts[0], CultureInfo.InvariantCulture),
-            AccountCurrency = symbolParts[1],
-            QuoteCurrency = symbolParts[2],
-            PipSize = double.Parse(symbolParts[3], CultureInfo.InvariantCulture),
-            StepVolume = double.Parse(symbolParts[4], CultureInfo.InvariantCulture),
-            QuoteToAccountRate = double.Parse(symbolParts[5], CultureInfo.InvariantCulture)
-        };
+        return history;
+    }
+
+    private async Task<List<PriceZone>> GetZones(MetaTraderPipeClient bridge, string symbol, List<MarketData> history)
+    {
+        var zones = analyzer.DetectZones(history, ZoneMergeThreshold);
+        logger.LogInformation("Detected {ZoneCount} zones for {Symbol} with threshold {Threshold}.", zones.Count, symbol, ZoneMergeThreshold);
+        return zones;
     }
 
     private async Task CheckForClosedTrades(MetaTraderPipeClient bridge, string tradingSymbol)
@@ -230,7 +315,7 @@ public class TradingJob(
         logger.LogInformation("--- Checking for closed trades on {Symbol} ---", tradingSymbol);
         try
         {
-            var openTicketsStr = bridge.SendCommand($"GET_OPEN_TICKETS,{tradingSymbol}");
+            var openTicketsStr = await bridge.SendCommandAsync($"GET_OPEN_TICKETS,{tradingSymbol}");
             var currentlyOpenTickets = new HashSet<long>();
             if (!string.IsNullOrEmpty(openTicketsStr) && !openTicketsStr.StartsWith("ERROR") && openTicketsStr != "NONE")
             {
@@ -243,7 +328,7 @@ public class TradingJob(
                 if (!currentlyOpenTickets.Contains(ticket))
                 {
                     logger.LogInformation("Detected closed trade with ticket: {Ticket}. Fetching info...", ticket);
-                    var tradeInfoStr = bridge.SendCommand($"GET_CLOSED_TRADE_INFO,{ticket}");
+                    var tradeInfoStr = await bridge.SendCommandAsync($"GET_CLOSED_TRADE_INFO,{ticket}");
                     if (!tradeInfoStr.StartsWith("ERROR"))
                     {
                         var infoParts = tradeInfoStr.Split(',');
@@ -267,7 +352,7 @@ public class TradingJob(
             using (LogContext.PushProperty("ops", true))
             using (LogContext.PushProperty("EventType", "Error"))
             {
-                logger.LogError(ex, "An exception occurred in Execute method.");
+                logger.LogError(ex, "An exception occurred in CheckForClosedTrades.");
             }
         }
     }
@@ -278,7 +363,7 @@ public class TradingJob(
         logger.LogInformation("--- Managing {Count} open trades ---", OpenTradeTickets.Count);
         foreach (var ticket in OpenTradeTickets.ToList())
         {
-            var response = bridge.SendCommand($"MANAGE_TRAILING_STOP,{ticket}");
+            var response = await bridge.SendCommandAsync($"MANAGE_TRAILING_STOP,{ticket}");
             if (response.StartsWith("SUCCESS"))
             { 
                 logger.LogInformation("Trailing stop for ticket {Ticket} was updated.", ticket);

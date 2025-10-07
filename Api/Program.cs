@@ -53,6 +53,6 @@ app.UseHangfireDashboard();
 RecurringJob.AddOrUpdate<TradingJob>(
     "main-trading-cycle", 
     job => job.RunCycle(), 
-    "*/1 * * * *");
+    "*/2 * * * *");
 
 app.Run();
