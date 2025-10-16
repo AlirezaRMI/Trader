@@ -18,15 +18,11 @@ public class TradingJob(
     ILogger<TradingJob> logger,
     IEconomicCalendarService service)
 {
-    private static readonly List<long> OpenTradeTickets = new();
-    private static readonly Dictionary<string, long> LastTradeSignalTimes = new(); 
-    private static readonly Dictionary<string, (List<MarketData> History, DateTime FetchedAt)> HistoryCache = new();  
-    
     private const string PhaseTimeframe = "H1";
     private const string PatternTimeframe = "M15";
     private const string EntryTimeframe = "M5";
-    private const int HistoryCandleCount = 500;
-    private const double ZoneMergeThreshold = 0.001;
+    private const int HistoryCandleCount = 250;
+    private const double ZoneMergeThreshold = 0.002;
     private static readonly TimeSpan HistoryCacheExpiry = TimeSpan.FromMinutes(5);
 
     public async Task RunCycle()
@@ -47,15 +43,13 @@ public class TradingJob(
                 
                 logger.LogInformation(">>>>>> Operating on symbol: {Symbol} <<<<<<", tradingSymbol);
 
-                await service.RefreshCalendarAsync();
-                if (service.IsInEmbargoPeriod(tradingSymbol, 30, 30))
-                {
-                    logger.LogWarning("Execution paused due to upcoming high-impact news for {Symbol}.", tradingSymbol);
-                    return; 
-                }
+                // await service.RefreshCalendarAsync();
+                // if (service.IsInEmbargoPeriod(tradingSymbol, 30, 30))
+                // {
+                //     logger.LogWarning("Execution paused due to upcoming high-impact news for {Symbol}.", tradingSymbol);
+                //     return; 
+                // }
                 
-                await CheckForClosedTrades(bridge, tradingSymbol);
-                await ManageOpenTrades(bridge, tradingSymbol);
                 await Execute(bridge, tradingSymbol);
             }
             catch (Exception ex)
@@ -102,7 +96,7 @@ public class TradingJob(
                 return;
             }
             
-            var lastTradeSignalTime = LastTradeSignalTimes.TryGetValue(tradingSymbol, out var time) ? time : 0L;
+            var lastTradeSignalTime = PositionManagementJob.LastTradeSignalTimes.TryGetValue(tradingSymbol, out var time) ? time : 0L;
             
             var zones = await GetZones(bridge, tradingSymbol, history);
             
@@ -156,8 +150,8 @@ public class TradingJob(
                 var parts = tradeResponse.Split(',');
                 if (parts.Length > 1 && long.TryParse(parts[1], out var ticketId))
                 {
-                    OpenTradeTickets.Add(ticketId);
-                    LastTradeSignalTimes[tradingSymbol] = marketDataEntry.OpenTime;
+                    PositionManagementJob.OpenTradeTickets.Add(ticketId);
+                    PositionManagementJob.LastTradeSignalTimes[tradingSymbol] = marketDataEntry.OpenTime;
                     
                     using (LogContext.PushProperty("ops", true))
                     using (LogContext.PushProperty("EventType", "TradeOpened"))
@@ -198,14 +192,14 @@ public class TradingJob(
     private async Task<List<MarketData>> GetHistoryDataCached(MetaTraderPipeClient bridge, string symbol, string tf, int count)
     {
         var cacheKey = $"{symbol}_{tf}";
-        if (HistoryCache.TryGetValue(cacheKey, out var cached) && DateTime.UtcNow - cached.FetchedAt < HistoryCacheExpiry)
+        if (PositionManagementJob.HistoryCache.TryGetValue(cacheKey, out var cached) && DateTime.UtcNow - cached.FetchedAt < HistoryCacheExpiry)
         {
             logger.LogDebug("Using cached history for {Symbol}/{TF}", symbol, tf);
             return cached.History;
         }
 
         var history = await GetHistoryData(bridge, symbol, tf, count);
-        HistoryCache[cacheKey] = (history, DateTime.UtcNow);
+        PositionManagementJob.HistoryCache[cacheKey] = (history, DateTime.UtcNow);
         return history;
     }
 
@@ -307,66 +301,5 @@ public class TradingJob(
         var zones = analyzer.DetectZones(history, ZoneMergeThreshold);
         logger.LogInformation("Detected {ZoneCount} zones for {Symbol} with threshold {Threshold}.", zones.Count, symbol, ZoneMergeThreshold);
         return zones;
-    }
-
-    private async Task CheckForClosedTrades(MetaTraderPipeClient bridge, string tradingSymbol)
-    {
-        logger.LogInformation("--- Checking for closed trades on {Symbol} ---", tradingSymbol);
-        try
-        {
-            var openTicketsStr = await bridge.SendCommandAsync($"GET_OPEN_TICKETS,{tradingSymbol}");
-            var currentlyOpenTickets = new HashSet<long>();
-            if (!string.IsNullOrEmpty(openTicketsStr) && !openTicketsStr.StartsWith("ERROR") && openTicketsStr != "NONE")
-            {
-                currentlyOpenTickets = openTicketsStr.Split(',').Select(long.Parse).ToHashSet();
-            }
-            
-            var allTrackedTickets = OpenTradeTickets.ToList(); 
-            foreach (var ticket in allTrackedTickets)
-            {
-                if (!currentlyOpenTickets.Contains(ticket))
-                {
-                    logger.LogInformation("Detected closed trade with ticket: {Ticket}. Fetching info...", ticket);
-                    var tradeInfoStr = await bridge.SendCommandAsync($"GET_CLOSED_TRADE_INFO,{ticket}");
-                    if (!tradeInfoStr.StartsWith("ERROR"))
-                    {
-                        var infoParts = tradeInfoStr.Split(',');
-                        var profit = double.Parse(infoParts[1], CultureInfo.InvariantCulture);
-                        using (LogContext.PushProperty("ops", true))
-                        using (LogContext.PushProperty("EventType", "TradeClosed"))
-                        {
-                            logger.LogInformation("Trade closed. Ticket: {Ticket}, Profit: {Profit}", ticket, profit);
-                        }
-                    }
-                    else
-                    {
-                        logger.LogWarning("Could not get info for closed trade {Ticket}. Response: {Response}", ticket, tradeInfoStr);
-                    }
-                    OpenTradeTickets.Remove(ticket);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            using (LogContext.PushProperty("ops", true))
-            using (LogContext.PushProperty("EventType", "Error"))
-            {
-                logger.LogError(ex, "An exception occurred in CheckForClosedTrades.");
-            }
-        }
-    }
-
-    private async Task ManageOpenTrades(MetaTraderPipeClient bridge, string tradingSymbol)
-    {
-        if (OpenTradeTickets.Count == 0) return;
-        logger.LogInformation("--- Managing {Count} open trades ---", OpenTradeTickets.Count);
-        foreach (var ticket in OpenTradeTickets.ToList())
-        {
-            var response = await bridge.SendCommandAsync($"MANAGE_TRAILING_STOP,{ticket}");
-            if (response.StartsWith("SUCCESS"))
-            { 
-                logger.LogInformation("Trailing stop for ticket {Ticket} was updated.", ticket);
-            }
-        }
     }
 }

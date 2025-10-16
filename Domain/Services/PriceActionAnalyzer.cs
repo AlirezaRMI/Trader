@@ -4,7 +4,7 @@ using Domain.Enum;
 
 namespace Domain.Services;
 
-public class PriceActionAnalyzer(ILogger<PriceActionAnalyzer> logger)
+public  class PriceActionAnalyzer(ILogger<PriceActionAnalyzer> logger)
 {
     public List<PriceZone> DetectZones(List<MarketData> candles, double mergeThreshold)
     {

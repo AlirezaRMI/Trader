@@ -43,7 +43,7 @@ builder.Services.AddScoped<TradingJob>();
 
 builder.Services.AddHangfire(config => config.UseMemoryStorage());
 builder.Services.AddHangfireServer(options => options.WorkerCount = 1);
-builder.Services.AddSingleton<IEconomicCalendarService, EconomicCalendarService>();
+builder.Services.AddHttpClient<IEconomicCalendarService, EconomicCalendarService>();
 
 var app = builder.Build();
 
@@ -51,8 +51,14 @@ app.UseSerilogRequestLogging();
 app.UseHangfireDashboard();
 
 RecurringJob.AddOrUpdate<TradingJob>(
-    "main-trading-cycle", 
-    job => job.RunCycle(), 
-    "*/2 * * * *");
+    "main-trading-cycle",
+    job => job.RunCycle(),
+    "*/30 * * * * *");
+
+RecurringJob.AddOrUpdate<PositionManagementJob>(
+    "position-management",
+    job => job.ManagePositions(),
+    "*/10 * * * * *"  
+);
 
 app.Run();

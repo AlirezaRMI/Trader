@@ -10,7 +10,7 @@ public class PriceActionEngine(ILogger<PriceActionEngine> logger) : IStrategyEng
     private static readonly Dictionary<double, DateTime> BrokenSupportZones = new();
     private static readonly Dictionary<double, DateTime> BrokenResistanceZones = new();
 
-    private const double RiskPerTradeUSD = 10.0;
+    private const double RiskPerTradeUSD = 5.0;
     private const double RiskPercentage = 0.01;
 
     public TradeDecision Evaluate(AccountInfo account, SymbolDetails symbol, MarketData marketPhase, MarketData marketPattern, MarketData marketEntry, long lastTradeSignalTime, List<PriceZone> zones, List<MarketData> history)
@@ -35,7 +35,7 @@ public class PriceActionEngine(ILogger<PriceActionEngine> logger) : IStrategyEng
         }
 
 
-        double stopLossAtrMultiplier = 2.0;
+        double stopLossAtrMultiplier = 1.5;
         double stopLossDistance = marketEntry.Atr * stopLossAtrMultiplier;
 
         double stopLossPrice;

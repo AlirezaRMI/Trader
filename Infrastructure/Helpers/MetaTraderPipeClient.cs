@@ -31,7 +31,7 @@ public sealed class MetaTraderPipeClient(ILogger logger) : IDisposable
             await _pipeClient.FlushAsync();
             logger.LogInformation("C#: Sent command: '{Command}'", command);
             
-            var responseBytes = new byte[4096];
+            var responseBytes = new byte[8192];
             var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(15));
             var bytesRead = await _pipeClient.ReadAsync(responseBytes, 0, responseBytes.Length, cancellationTokenSource.Token);
             

@@ -28,7 +28,7 @@ public class IndicatorBasedEngine(ILogger<IndicatorBasedEngine> logger) : IStrat
             return new TradeDecision {Note = "No valid indicator-based signal detected."};
         }
 
-        double stopLossAtrMultiplier = 2.0;
+        double stopLossAtrMultiplier = 1.5;
         double stopLossDistance = marketEntry.Atr * stopLossAtrMultiplier;
 
         double stopLossPrice;
@@ -80,7 +80,7 @@ public class IndicatorBasedEngine(ILogger<IndicatorBasedEngine> logger) : IStrat
     {
         logger.LogInformation("--- Evaluating Indicator-Based Strategy Conditions ---");
 
-        var adxThreshold = 20.0;
+        var adxThreshold = 45.0;
         if (pattern.Adx < adxThreshold)
         {
             logger.LogWarning("IndicatorEngine: Trend is too weak (ADX < {Threshold}). No trade allowed.",
@@ -99,7 +99,7 @@ public class IndicatorBasedEngine(ILogger<IndicatorBasedEngine> logger) : IStrat
         var atrMultiplier = 1.5;
         var isVolatileByAtr = entry.Atr > (entry.AtrSma * atrMultiplier);
 
-        var explosiveTrendAdx = 50.0;
+        var explosiveTrendAdx = 45.0;
         var isExplosiveByAdx = pattern.Adx > explosiveTrendAdx;
 
         bool entryBuyTrigger;
