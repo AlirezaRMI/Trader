@@ -4,18 +4,23 @@ using Domain.Enum;
 
 namespace Domain.Services;
 
+using Domain.Parameters;
+
 public class MarketSupervisor(
     IndicatorBasedEngine indicatorEngine,
     PriceActionEngine priceActionEngine,
     ILogger<MarketSupervisor> logger)
 {
-    public IStrategyEngine SelectStrategy(MarketData patternData, List<PriceZone> zones)
+    public IStrategyEngine SelectStrategy(MarketData patternData, List<PriceZone> zones, StrategyParameters? parameters = null)
     {
+        parameters ??= new();
+        if (parameters.Mode == "Indicator") return indicatorEngine;
+        if (parameters.Mode == "PriceAction") return priceActionEngine;
         logger.LogInformation("Supervisor selecting strategy based on Market Conditions...");
-        const double strongTrendAdx = 40.0;
-        const double weakTrendAdx = 20.0;
+        var strongTrendAdx = parameters.AutoSwitchAdx;
+        var weakTrendAdx = parameters.WeakTrendAdx;
 
-        if (patternData.Adx > strongTrendAdx)
+        if (patternData.Adx >= strongTrendAdx)
         {
             logger.LogInformation("Strategy selected: IndicatorBasedEngine (Reason: Very Strong Trend, ADX > {threshold}).", strongTrendAdx);
             return indicatorEngine;

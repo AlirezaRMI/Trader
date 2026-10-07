@@ -1,13 +1,4 @@
-﻿علیرضا :
-  "Telegram": {
-    "BotToken": "8215393718:AAG9adVrj66gFJYGVGBdGnjTzL_XEtNDAy8",
-    "ChatId": "7981747205"
-  }
-
-محمد:
-"Telegram": {
-    "BotToken": "8215393718:AAG9adVrj66gFJYGVGBdGnjTzL_XEtNDAy8",
-    "ChatId": "7468880626"
-  }
-  
-  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
+Telegram credentials are loaded from the ignored root .env file.
+Use TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_IDS_0, TELEGRAM_CHAT_IDS_1.
+Never store a bot token, chat configuration, or GitHub PAT in this source file.
+Previously committed credentials must be rotated by their owner; Git history was not rewritten.

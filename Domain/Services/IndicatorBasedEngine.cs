@@ -5,15 +5,15 @@ using Microsoft.Extensions.Logging;
 
 namespace Domain.Services;
 
+using Domain.Parameters;
+
 public class IndicatorBasedEngine(ILogger<IndicatorBasedEngine> logger) : IStrategyEngine
 {
-    private const double RiskPerTradeUsd = 5.0;
-    private const double RiskPercentage = 0.01;
-
     public TradeDecision Evaluate(AccountInfo account, SymbolDetails symbol, MarketData marketPhase,
         MarketData marketPattern, MarketData marketEntry, long lastTradeSignalTime, List<PriceZone> zones,
-        List<MarketData> history)
+        List<MarketData> history, StrategyParameters? parameters = null, double riskPercent = 1, double maximumRiskAmount = 5)
     {
+        parameters ??= new();
         if (marketEntry.OpenTime == lastTradeSignalTime)
         {
             logger.LogWarning(
@@ -22,66 +22,22 @@ public class IndicatorBasedEngine(ILogger<IndicatorBasedEngine> logger) : IStrat
             return new TradeDecision {Note = "Signal already traded on this candle."};
         }
 
-        var signal = GetTradingSignal(marketPhase, marketPattern, marketEntry);
+        var signal = GetTradingSignal(marketPhase, marketPattern, marketEntry, parameters);
         if (signal == ActionKind.Hold)
         {
             return new TradeDecision {Note = "No valid indicator-based signal detected."};
         }
 
-        double stopLossAtrMultiplier = 1.5;
-        double stopLossDistance = marketEntry.Atr * stopLossAtrMultiplier;
-
-        double stopLossPrice;
-        if (signal == ActionKind.Buy)
-        {
-            stopLossPrice = marketEntry.Low - stopLossDistance;
-        }
-        else
-        {
-            stopLossPrice = marketEntry.High + stopLossDistance;
-        }
-
-        double pipValuePerLot = CalculatePipValuePerLot(symbol);
-        logger.LogInformation("IndicatorEngine: Calculated Pip Value per Lot for {Symbol}: {PipValue:C}",
-            symbol.SymbolName, pipValuePerLot);
-
-        double stopLossPips = stopLossDistance / symbol.PipSize;
-        if (stopLossPips <= 0)
-        {
-            return new TradeDecision {Note = "Invalid StopLoss distance."};
-        }
-
-        double riskAmount = Math.Min(account.Equity * RiskPercentage, RiskPerTradeUsd);
-        double positionSizeLots = riskAmount / (stopLossPips * pipValuePerLot);
-        positionSizeLots = Math.Round(positionSizeLots / symbol.StepVolume) * symbol.StepVolume;
-
-        if (positionSizeLots < symbol.StepVolume)
-        {
-            return new TradeDecision {Note = "Calculated position size is too small."};
-        }
-
-        return new TradeDecision
-        {
-            Action = signal,
-            EntryPrice = (signal == ActionKind.Buy) ? marketEntry.Ask : marketEntry.Bid,
-            StopLossPrice = stopLossPrice,
-            TakeProfitPrice = 0,
-            PositionSizeLots = positionSizeLots,
-            Note = "Indicator-based signal confirmed."
-        };
+        return PositionSizer.CreateRiskPlan(signal, account.Equity, symbol, marketEntry, history,
+            parameters, riskPercent, maximumRiskAmount, "Indicator-based signal confirmed.");
     }
 
-    private double CalculatePipValuePerLot(SymbolDetails details)
-    {
-        return (details.PipSize / details.QuoteToAccountRate) * details.LotSize;
-    }
-
-    private ActionKind GetTradingSignal(MarketData phase, MarketData pattern, MarketData entry)
+    private ActionKind GetTradingSignal(MarketData phase, MarketData pattern, MarketData entry, StrategyParameters parameters)
     {
         logger.LogInformation("--- Evaluating Indicator-Based Strategy Conditions ---");
 
-        var adxThreshold = 45.0;
-        if (pattern.Adx < adxThreshold)
+        var adxThreshold = parameters.StrongTrendAdx;
+        if (!double.IsFinite(pattern.Adx) || pattern.Adx < adxThreshold)
         {
             logger.LogWarning("IndicatorEngine: Trend is too weak (ADX < {Threshold}). No trade allowed.",
                 adxThreshold);
@@ -93,13 +49,15 @@ public class IndicatorBasedEngine(ILogger<IndicatorBasedEngine> logger) : IStrat
 
         var isPhaseUpTrend = phase.Close > phase.EmaSlow;
         var isPatternUpTrend = pattern.Close > pattern.EmaSlow;
-        logger.LogInformation("IndicatorEngine: Phase (H1) Trend: IsUpTrend = {IsUpTrend}", isPhaseUpTrend);
-        logger.LogInformation("IndicatorEngine: Pattern (M15) Trend: IsUpTrend = {IsUpTrend}", isPatternUpTrend);
+        var isPhaseDownTrend = phase.Close < phase.EmaSlow;
+        var isPatternDownTrend = pattern.Close < pattern.EmaSlow;
+        logger.LogInformation("IndicatorEngine: Phase ({Timeframe}m) Trend: IsUpTrend = {IsUpTrend}", parameters.PhaseTimeframeMinutes, isPhaseUpTrend);
+        logger.LogInformation("IndicatorEngine: Pattern ({Timeframe}m) Trend: IsUpTrend = {IsUpTrend}", parameters.PatternTimeframeMinutes, isPatternUpTrend);
 
-        var atrMultiplier = 1.5;
+        var atrMultiplier = parameters.AtrSpikeMultiplier;
         var isVolatileByAtr = entry.Atr > (entry.AtrSma * atrMultiplier);
 
-        var explosiveTrendAdx = 45.0;
+        var explosiveTrendAdx = parameters.MomentumAdx;
         var isExplosiveByAdx = pattern.Adx > explosiveTrendAdx;
 
         bool entryBuyTrigger;
@@ -121,8 +79,8 @@ public class IndicatorBasedEngine(ILogger<IndicatorBasedEngine> logger) : IStrat
         }
 
         logger.LogInformation(
-            "IndicatorEngine: Entry (M5) Trigger Check: BuyTrigger = {BuyTrigger}, SellTrigger = {SellTrigger}",
-            entryBuyTrigger, entrySellTrigger);
+            "IndicatorEngine: Entry ({Timeframe}m) Trigger Check: BuyTrigger = {BuyTrigger}, SellTrigger = {SellTrigger}",
+            parameters.EntryTimeframeMinutes, entryBuyTrigger, entrySellTrigger);
 
         if (isPhaseUpTrend && isPatternUpTrend && entryBuyTrigger)
         {
@@ -130,7 +88,7 @@ public class IndicatorBasedEngine(ILogger<IndicatorBasedEngine> logger) : IStrat
             return ActionKind.Buy;
         }
 
-        if (!isPhaseUpTrend && !isPatternUpTrend && entrySellTrigger)
+        if (isPhaseDownTrend && isPatternDownTrend && entrySellTrigger)
         {
             logger.LogInformation("✅ IndicatorEngine: SUCCESS: All conditions for a SELL signal are met.");
             return ActionKind.Sell;

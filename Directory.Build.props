@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+    <ArtifactsPath>$(MSBuildThisFileDirectory).artifacts</ArtifactsPath>
+    <RestorePackagesPath>$(MSBuildThisFileDirectory).artifacts/packages</RestorePackagesPath>
+    <Deterministic>true</Deterministic>
+    <LangVersion>14.0</LangVersion>
+  </PropertyGroup>
+</Project>

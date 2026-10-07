@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace Application.Behaviors;
 
@@ -9,16 +10,24 @@ public sealed class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken ct)
     {
         var name = typeof(TRequest).Name;
-        log.LogInformation("Handling {RequestName} {@Request}", name, request);
+        var started = Stopwatch.GetTimestamp();
+        log.LogInformation("Handling {RequestName}", name);
         try
         {
             var response = await next(ct);
-            log.LogInformation("Handled {RequestName} => {@Response}", name, response);
+            log.LogInformation("Handled {RequestName} in {ElapsedMs} ms", name, Stopwatch.GetElapsedTime(started).TotalMilliseconds);
             return response;
+        }
+        catch (OperationCanceledException) when (ct.IsCancellationRequested)
+        {
+            log.LogInformation("Cancelled {RequestName} after {ElapsedMs} ms", name, Stopwatch.GetElapsedTime(started).TotalMilliseconds);
+            throw;
         }
         catch (Exception ex)
         {
-            log.LogError(ex, "Unhandled error in {RequestName} {@Request}", name, request);
+            // Exception messages can also contain provider credentials; keep this boundary metadata-only.
+            log.LogError("Failed {RequestName} after {ElapsedMs} ms ({ExceptionType})", name,
+                Stopwatch.GetElapsedTime(started).TotalMilliseconds, ex.GetType().Name);
             throw;
         }
     }

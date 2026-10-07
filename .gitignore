@@ -1,0 +1,14 @@
+**/bin/
+**/obj/
+.artifacts/
+.superpowers/
+.idea/
+*.user
+.env
+.env.*
+!.env.example
+data/
+**/logs/
+**/node_modules/
+**/playwright-report/
+**/test-results/

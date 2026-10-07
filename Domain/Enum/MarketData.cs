@@ -14,4 +14,5 @@ public record MarketData
     public double Atr { get; set; }
     public double AtrSma { get; set; }
     public double Adx { get; set; }
+    public int QuoteAgeSeconds { get; set; }
 }

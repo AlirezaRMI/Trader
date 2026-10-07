@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0d1020">
+    <meta name="color-scheme" content="dark">
+    <title>Trader — مرکز فرمان معاملات</title>
+    <link rel="icon" href="/mark.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/dashboard.css?v=20261007-ui2">
+    <script type="module" src="/js/app.mjs?v=20261007-ui2"></script>
+</head>
+<body>
+<div class="ambient" aria-hidden="true"></div>
+<button class="menu-backdrop" data-action="menu" aria-label="بستن منو"></button>
+<aside class="sidebar" aria-label="منوی اصلی">
+    <a class="brand" href="#overview"><span class="brand-mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path
+            d="M16 2 29 9v14l-13 7L3 23V9Z"/><path d="m9 21 5-11 4 8 5-7"/></svg></span><span><strong>TRADER<span
+            class="brand-point">.</span></strong><small>مرکز فرمان معاملات</small></span></a>
+    <div class="nav-caption">فضای کار</div>
+    <nav id="navigation">
+        <a href="#overview" data-view="overview"><span data-icon="grid"></span>نمای کلی</a>
+        <a href="#market" data-view="market"><span data-icon="chart"></span>بازار و تحلیل<span
+                class="nav-new">LIVE</span></a>
+        <a href="#positions" data-view="positions"><span data-icon="wallet"></span>معاملات<span id="position-count"
+                                                                                                class="nav-count">—</span></a>
+        <a href="#journal" data-view="journal"><span data-icon="activity"></span>ژورنال رویدادها</a>
+        <div class="nav-caption">مدیریت سیستم</div>
+        <a href="#connections" data-view="connections"><span data-icon="signal"></span>اتصال‌ها و سلامت</a>
+        <a href="#settings" data-view="settings"><span data-icon="sliders"></span>تنظیمات ربات</a>
+    </nav>
+    <div class="sidebar-bottom">
+        <div class="bridge-mini"><span class="status-dot" id="agent-dot"></span>
+            <div><strong id="agent-label">منتظر Agent</strong><small>لایه‌ی مستقل متاتریدر</small></div>
+            <span data-icon="signal"></span></div>
+        <div class="sidebar-note"><span data-icon="shield"></span>
+            <p>کنترل هوشمند، اجرای محافظت‌شده.<br><small>شروع برنامه همیشه در حالت توقف</small></p></div>
+        <div class="version"><span>CONTROL PLANE</span><span>v3.0</span></div>
+    </div>
+</aside>
+<div class="workspace">
+    <header class="topbar">
+        <div class="topbar-title">
+            <button class="icon-button mobile-menu" data-action="menu" aria-label="باز کردن منو"><span
+                    data-icon="menu"></span></button>
+            <div class="breadcrumb">فضای کار <span>/</span> <span id="breadcrumb-view">نمای کلی</span></div>
+        </div>
+        <div class="topbar-actions">
+            <button class="search-command" data-action="commands"><span data-icon="search"></span>فرمان سریع<kbd>/</kbd>
+            </button>
+            <span class="feed-pill" id="feed-status"><i></i>در حال اتصال</span>
+            <button class="icon-button" data-action="journal" aria-label="دیدن رویدادها"><span data-icon="bell"></span>
+            </button>
+            <button class="operator-chip" data-action="session" aria-label="وضعیت نشست"><span
+                    class="operator-avatar">T</span><span>اپراتور<small>پنل کنترل</small></span></button>
+        </div>
+    </header>
+    <main id="main" tabindex="-1" aria-busy="true">
+        <div class="initial-loading"><span class="loader"></span>در حال دریافت وضعیت سیستم…</div>
+    </main>
+    <footer class="workspace-footer"><span><i class="footer-dot"></i>TRADER ENGINE / وضعیت واقعی سیستم</span><span
+            id="last-update">منتظر اولین به‌روزرسانی</span></footer>
+</div>
+<dialog id="login-dialog" class="modal login-modal">
+    <div class="modal-symbol">T<span>.</span></div>
+    <p class="eyebrow">دسترسی امن</p>
+    <h2>به مرکز فرمان خوش آمدید</h2>
+    <p class="muted">برای مشاهده‌ی حساب و کنترل ربات، وارد شوید.</p>
+    <form id="login-form"><label for="password">رمز پنل</label><input id="password" name="password" type="password"
+                                                                      required autocomplete="current-password"
+                                                                      maxlength="1024">
+        <p id="login-error" class="form-error" role="alert"></p>
+        <button class="button primary" type="submit">ورود به پنل <span data-icon="arrow"></span></button>
+    </form>
+</dialog>
+<dialog id="confirm-dialog" class="modal">
+    <p class="eyebrow">تأیید اپراتور</p>
+    <h2 id="confirm-title"></h2>
+    <p id="confirm-message" class="muted"></p>
+    <div class="modal-actions">
+        <button class="button primary" data-action="confirm">تأیید و ادامه</button>
+        <button class="button secondary" data-action="close-dialog">انصراف</button>
+    </div>
+</dialog>
+<dialog id="detail-dialog" class="modal wide-modal">
+    <button class="modal-close icon-button" data-action="close-dialog" aria-label="بستن"><span data-icon="close"></span>
+    </button>
+    <div id="detail-content"></div>
+</dialog>
+<dialog id="command-dialog" class="modal command-modal"><p class="eyebrow">فرمان سریع</p>
+    <h2>کجا می‌خواهید بروید؟</h2>
+    <div id="command-list"></div>
+    <small class="muted">برای بستن، Esc را فشار دهید.</small></dialog>
+<div id="toasts" class="toast-stack" aria-live="polite"></div>
+<noscript>برای استفاده از داشبورد، جاوااسکریپت مرورگر را فعال کنید.</noscript>
+</body>
+</html>

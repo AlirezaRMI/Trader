@@ -6,13 +6,13 @@ namespace Domain.Services;
 
 public  class PriceActionAnalyzer(ILogger<PriceActionAnalyzer> logger)
 {
-    public List<PriceZone> DetectZones(List<MarketData> candles, double mergeThreshold)
+    public List<PriceZone> DetectZones(List<MarketData> candles, double mergeThreshold, int minimumStrength = 2)
     {
         var fractalPrices = FindFractalPrices(candles);
         var zones = ClusterFractalsIntoZones(fractalPrices, mergeThreshold);
         logger.LogInformation("PriceActionAnalyzer: Detected {ZoneCount} raw zones from {FractalCount} fractals.", zones.Count, fractalPrices.Count);
         
-        var strongZones = zones.Where(z => z.Strength > 1).ToList();
+        var strongZones = zones.Where(z => z.Strength >= minimumStrength).ToList();
         logger.LogInformation("PriceActionAnalyzer: Filtered down to {StrongZoneCount} strong zones (strength > 1).", strongZones.Count);
         
         return strongZones;

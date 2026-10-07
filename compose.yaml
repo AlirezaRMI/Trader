@@ -1,20 +1,35 @@
-﻿services:
+services:
   api:
     build:
       context: .
       dockerfile: Api/Dockerfile
-    container_name: Tbot
-  
+    image: trader-control-plane:local
     ports:
-      - "5005:8080"
-    
+      - "127.0.0.1:5005:8080"
     environment:
-       ASPNETCORE_ENVIRONMENT: "Production"
-       ASPNETCORE_URLS: "http://+:8080"
-       Telegram__BotToken : "${TELEGRAM_BOT_TOKEN}"
-       Telegram__ChatIds__0: "${TELEGRAM_CHAT_IDS_0}"
-       Telegram__ChatIds__1: "${TELEGRAM_CHAT_IDS_1}"
+      ASPNETCORE_ENVIRONMENT: Production
+      Security__Password: "${DASHBOARD_PASSWORD:?Set DASHBOARD_PASSWORD in .env}"
+      Bridge__Token: "${BRIDGE_TOKEN:?Set BRIDGE_TOKEN in .env}"
+      Security__TrustedProxy: "${TRUSTED_PROXY:-}"
+      Telegram__BotToken: "${TELEGRAM_BOT_TOKEN:-}"
+      Telegram__ChatIds__0: "${TELEGRAM_CHAT_IDS_0:-}"
+      Telegram__ChatIds__1: "${TELEGRAM_CHAT_IDS_1:-}"
+      Runtime__DataDirectory: /app/data
     volumes:
-      - /var/lib/tbot-data:/var/lib/tbot-data
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: always
+      - trader-data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "dotnet", "Api.dll", "--health-check"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+volumes:
+  trader-data:

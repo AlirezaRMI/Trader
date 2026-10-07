@@ -1,0 +1,9 @@
+@font-face{font-family:ModamWeb;src:url("/fonts/MODAM-EXTRALIGHT.TTF") format("truetype");font-weight:200;font-display:swap}
+@font-face{font-family:ModamWeb;src:url("/fonts/MODAM-LIGHT.TTF") format("truetype");font-weight:300;font-display:swap}
+@font-face{font-family:ModamWeb;src:url("/fonts/MODAM-REGULAR.TTF") format("truetype");font-weight:400;font-display:swap}
+@font-face{font-family:ModamWeb;src:url("/fonts/MODAM-MEDIUM.TTF") format("truetype");font-weight:500;font-display:swap}
+@font-face{font-family:ModamWeb;src:url("/fonts/MODAM-SEMIBOLD.TTF") format("truetype");font-weight:600;font-display:swap}
+@font-face{font-family:ModamWeb;src:url("/fonts/MODAM-BOLD.TTF") format("truetype");font-weight:700;font-display:swap}
+@font-face{font-family:ModamWeb;src:url("/fonts/MODAM-EXTRABOLD.TTF") format("truetype");font-weight:800;font-display:swap}
+@font-face{font-family:ModamWeb;src:url("/fonts/MODAM-BLACK.TTF") format("truetype");font-weight:900;font-display:swap}
+:root{--font:ModamWeb,Modam,"Segoe UI",Tahoma,sans-serif}

@@ -1,64 +1,10 @@
-using Domain.Polisy;
-using Domain.Services;
-using Domain.Services.Interfaces;
-using Hangfire;
-using Hangfire.MemoryStorage;
-using Infrastructure.Extention;
-using Infrastructure.Telegram;
-using Serilog;
-using Serilog.Events;
+using Api;
 
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Host.UseSerilog((ctx, cfg) =>
+if (args is ["--health-check"])
 {
-    cfg.ReadFrom.Configuration(ctx.Configuration)
-        .Enrich.FromLogContext()
-        .WriteTo.Console();
-
-    var token = ctx.Configuration["Telegram:BotToken"];
-    var chatIds = ctx.Configuration.GetSection("Telegram:ChatIds").Get<List<string>>();
-
-    if (string.IsNullOrWhiteSpace(token) || chatIds is not {Count: > 0}) return;
-    foreach (var chatId in chatIds)
-    {
-        cfg.WriteTo.Logger(lc => lc
-            .Filter.ByIncludingOnly(e => e.Properties.ContainsKey("ops"))
-            .WriteTo.TelegramBot(
-                botToken: token,
-                chatId: chatId,
-                restrictedToMinimumLevel: LogEventLevel.Information
-            )
-        );
-    }
-});
-
-
-builder.Services.AddScoped<IndicatorBasedEngine>();
-builder.Services.AddSingleton<DailyTradePolicy>();
-builder.Services.AddScoped<PriceActionAnalyzer>();
-builder.Services.AddScoped<PriceActionEngine>();
-builder.Services.AddScoped<MarketSupervisor>();
-builder.Services.AddScoped<TradingJob>();
-
-builder.Services.AddHangfire(config => config.UseMemoryStorage());
-builder.Services.AddHangfireServer(options => options.WorkerCount = 1);
-builder.Services.AddHttpClient<IEconomicCalendarService, EconomicCalendarService>();
-
-var app = builder.Build();
-
-app.UseSerilogRequestLogging();
-app.UseHangfireDashboard();
-
-RecurringJob.AddOrUpdate<TradingJob>(
-    "main-trading-cycle",
-    job => job.RunCycle(),
-    "*/30 * * * * *");
-
-RecurringJob.AddOrUpdate<PositionManagementJob>(
-    "position-management",
-    job => job.ManagePositions(),
-    "*/10 * * * * *"  
-);
-
-app.Run();
+    using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(3) };
+    try { Environment.ExitCode = (await http.GetAsync("http://127.0.0.1:8080/health/live")).IsSuccessStatusCode ? 0 : 1; }
+    catch (HttpRequestException) { Environment.ExitCode = 1; }
+    catch (TaskCanceledException) { Environment.ExitCode = 1; }
+}
+else await TraderApplication.Build(args).RunAsync();
